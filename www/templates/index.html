@@ -1,26 +1,50 @@
 {% extends 'base.html' %}
-{% block title %}首页{% endblock %}
+{% block title %} 首页 {% endblock %}
 {% block script %}
 {% endblock %}
 {% block content %}
-    <!-- post -->
-    {% for blog in blogs %}
-        <article class="uk-article uk-overflow-container">
-            <h1 class="uk-article-title">
-                <a href="/blog/{{ blog.id }}">{{ blog.title }}</a>
-            </h1>
-            <p>{{ blog.html_summary|safe }}</p>
-            <p class="uk-article-meta">
-                <span>由 <a href="/user/{{ blog.user_id }}">{{ blog.user_name }}</a> 发表于 {{ blog.created_at|deltatime}} </span>
-                <span class="uk-margin-left uk-margin-right"><i class="uk-icon-eye"></i> {{ blog.view_count }} 次阅读</span>
-                <span class="uk-icon-comment"></span>
-                {% if disqus %}
-                <span class="disqus-comment-count" data-disqus-identifier="{{ blog.id }}">评论数<i class="uk-icon-spinner uk-icon-spin"></i></span>
-                {% else %}
-                {% endif %}
-                <a class="uk-button uk-button-primary uk-float-right" href="/blog/{{ blog.id }}">继续阅读</a>
-            </p>
-        </article>
-    {% endfor %}
-    <!-- end post -->
+    <!-- sidebar -->
+    <div class="uk-width-medium-1-5">
+        <div class="uk-panel uk-panel-box">
+            <h3 class="uk-panel-title"><i class="uk-icon-folder-open"></i> 图纸目录</h3>
+            <ul class="uk-list uk-list-line">
+                {% for dir in args.dirlist %}
+                    <li><a href="{{ url_for('index', dir_cu=dir, page_cu=1) }}">
+                    {% if dir == args.dir_cu %}
+                        <i class="uk-icon-folder-open"></i> {{ dir }}
+                    {% else %}
+                        <i class="uk-icon-folder"></i> {{ dir }}
+                    {% endif %}
+                    </a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <!-- end sidebar -->
+
+    <div class="uk-width-medium-4-5 uk-row-first">
+        <div class="uk-panel uk-panel-box uk-panel-box-primary">
+            <h3 class="uk-panel-title">
+            {% if args.dir_cu == '' %}
+                <i class="uk-icon-file"></i> 当前打开的目录【 图纸根目录 】下的文件:
+            {% else %}
+                <i class="uk-icon-file"></i> 当前打开的目录【 {{ args.dir_cu }} 】下的文件:
+            {% endif %}
+            </h3>
+            <ul class="uk-grid uk-grid-small uk-grid-width-1-2 uk-grid-width-medium-1-3 uk-grid-width-large-1-5" data-uk-grid-margin>
+            {% for file in args.filelist[args.page.page_start:args.page.page_start+args.page.range] %}
+                <li><div class="uk-panel uk-panel-box"><a target="_aboutblank" href="{{ file }}">{{ file }}</a></div></li>
+            {% endfor %}
+            </ul>
+        </div>
+        <ul class="uk-pagination" data-uk-margin>
+        {% for i in range(1, args.page.page_all+1) %}
+            {% if args.page_cu == i %}
+                <li class="uk-active"><span>{{ i }}</span></li>
+            {% else %}
+                <li><a href="{{ url_for('index', dir_cu=args.dir_cu, page_cu=i) }}">{{ i }}</a></li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    </div>
 {% endblock %}
