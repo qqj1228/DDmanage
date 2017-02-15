@@ -3,14 +3,15 @@
 
 import logging
 import os
-from flask import Flask
-from flask import render_template
+import shutil
+from flask import Flask, render_template, request, url_for
 
 # 定义配置项
 DEBUG = True
 DWG_DIR = '/users/dwg'
-NAME = '图纸管理程'
-RANGE = 3
+TMP_DIR = 'tmp'
+NAME = '图纸管理程序'
+RANGE = 100
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -63,9 +64,18 @@ def index(dir_cu='', page_cu=1):
     return render_template('index.html', args=args)
 
 
-@app.route('/hello')
-def hello_world():
-    return 'Hello World!'
+@app.route('/showdwg/<dir>/<filename>')
+def showdwg(dir, filename):
+    args = dict()
+    source = DWG_DIR + '/' + dir + '/' + filename
+    dest = TMP_DIR + '/' + request.remote_addr.replace('.', '-')
+    shutil.copy(source, './static/' + dest)
+    url = url_for('static', filename=dest, _external=True)
+    args['dir'] = dir
+    args['filename'] = filename
+    args['source'] = source
+    args['url'] = url
+    return render_template('showdwg.html', args=args)
 
 
 if __name__ == '__main__':
