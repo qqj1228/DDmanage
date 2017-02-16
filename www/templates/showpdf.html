@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html class="uk-notouch">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ args.filename }}</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/uikit.gradient.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/uikit.min.js') }}"></script>
+</head>
+<body topmargin="0" leftmargin="0" bottommargin="4px" rightmargin="0">
+    <iframe class="uk-height-viewport" src="{{ args.url }}" width="100%" height="100%" frameborder="0"></iframe>
+</body>
+</html>

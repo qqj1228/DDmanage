@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html class="uk-notouch">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ args.filename }}</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/uikit.gradient.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/uikit.min.js') }}"></script>
+</head>
+<body>
+    <p class="uk-height-viewport" align="center">
+        <object classid="clsid:74A777F8-7A8F-4e7c-AF47-7074828086E2" id="MxDrawXCtrl" width=100% height=100%>
+            <param name="_Version" value="65536">
+            <param name="_ExtentX" value="24262">
+            <param name="_ExtentY" value="16219">
+            <param name="_StockProps" value="0">
+            <param name="DwgFilePath" value="">
+            <param name="IsRuningAtIE" value="1">
+            <param name="EnablePrintCmd" value="1">
+            <param name="ShowStatusBar" value="1">
+            <param name="ShowToolBars" value="1">
+            <param name="EnableIntelliSelect" value="1">
+            <param name="ShowCommandWindow" value="0">
+            <param name="ShowModelBar" value="1">
+            <param name="FirstRunPan" value="1">
+            <param name="Iniset" value="ResPath=ViewRes,EnableGripPoint=N,Theme=2,AutoZoomAll=Y,IsUseNewTeigha=Y,ISDISABLEEDITTEXT=Y,EnableDeleteKey=N">
+            <param name="ToolBarFiles" value="MxDraw-ToolBar.mxt,MxDraw-ToolBar-ET.mxt">
+        </object>
+    </p>
+</body>
+<script>
+    function CustomEvent(sEventName){
+        if(sEventName == "MxDrawXInitComplete"){
+            // 控件加载完成
+            mxOcx.OpenWebDwgFile("{{ args.url }}");
+        }
+    }
+    var mxOcx = document.getElementById("MxDrawXCtrl");
+    mxOcx.ImplementCustomEvent = CustomEvent;
+</script>
+</html>
