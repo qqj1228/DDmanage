@@ -4,17 +4,20 @@
 import logging
 import os
 import shutil
-from flask import Flask, render_template, request, url_for
+import re
+from flask import Flask, render_template, request, url_for, redirect, flash
 
-# 定义配置项
-DEBUG = True
-DWG_DIR = '/users/dwg'
-TMP_DIR = 'tmp'
-NAME = '图纸管理程序'
-RANGE = 100
 
-app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
+app = Flask(__name__)
+app.config.from_object('config.default')
+app.config.from_object('config.user')
+DWG_DIR = app.config.get('DWG_DIR')
+TMP_DIR = app.config.get('TMP_DIR')
+APP_NAME = app.config.get('APP_NAME')
+WEB_NAME = app.config.get('WEB_NAME')
+RANGE = app.config.get('RANGE')
+HOST = app.config.get('HOST')
 
 
 def getdir(dir=DWG_DIR):
@@ -55,13 +58,25 @@ def index(dir_cu='', page_cu=1):
     filelist = getfile(DWG_DIR + '/' + dir_cu)
     page = getpage(filelist, page_cu)
     args = dict()
-    args['web_name'] = NAME
+    args['app_name'] = APP_NAME
+    args['web_name'] = WEB_NAME
     args['dirlist'] = dirlist
     args['filelist'] = filelist
     args['dir_cu'] = dir_cu
     args['page_cu'] = page_cu
     args['page'] = page
     return render_template('index.html', args=args)
+
+
+@app.route('/show/<dir>/<filename>')
+def show(dir, filename):
+    if re.search(r'\.d[wx][gft]$', filename, re.M | re.I):
+        return redirect(url_for('showdwg', dir=dir, filename=filename))
+    elif re.search(r'\.pdf$', filename, re.I):
+        return redirect(url_for('showpdf', dir=dir, filename=filename))
+    else:
+        flash('无法打开 "' + filename + '"，暂未支持该文件格式。')
+        return redirect(url_for('index', dir_cu=dir, page_cu=1))
 
 
 @app.route('/showdwg/<dir>/<filename>')
@@ -71,12 +86,32 @@ def showdwg(dir, filename):
     dest = TMP_DIR + '/' + request.remote_addr.replace('.', '-')
     shutil.copy(source, './static/' + dest)
     url = url_for('static', filename=dest, _external=True)
-    args['dir'] = dir
     args['filename'] = filename
-    args['source'] = source
     args['url'] = url
     return render_template('showdwg.html', args=args)
 
 
+@app.route('/showpdf/<dir>/<filename>')
+def showpdf(dir, filename):
+    args = dict()
+    source = DWG_DIR + '/' + dir + '/' + filename
+    dest = TMP_DIR + '/' + request.remote_addr.replace('.', '-') + '.pdf'
+    shutil.copy(source, './static/' + dest)
+    url = url_for('static', filename=dest, _external=True)
+    args['filename'] = filename
+    args['url'] = url
+    return render_template('showpdf.html', args=args)
+
+
+@app.route('/about')
+def about():
+    dirlist = getdir()
+    args = dict()
+    args['dirlist'] = dirlist
+    args['app_name'] = APP_NAME
+    args['web_name'] = WEB_NAME
+    return render_template('about.html', args=args)
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=DEBUG)
+    app.run(host=HOST)

@@ -20,8 +20,8 @@
         <div class="uk-margin-large-left uk-margin-large-right">
             <a class="uk-navbar-brand uk-hidden-small" href="/">{{ args.web_name }}</a>
             <ul class="uk-navbar-nav uk-hidden-small">
-                <li><a href="/">文件管理</a></li>
-                <li><a href="/about">关于</a></li>
+                <li><a href="{{ url_for('index') }}">文件管理</a></li>
+                <li><a href="{{ url_for('about') }}">关于</a></li>
             </ul>
             <div class="uk-navbar-flip uk-hidden-small">
                 <ul class="uk-navbar-nav">
@@ -60,7 +60,7 @@
     <!-- footer -->
     <div class="uk-block uk-block-secondary uk-contrast">
         <div class="uk-margin-large-left uk-margin-large-right uk-text-center">
-            <p>Powered by <a target="_blank" href="https://github.com/qqj1228/DDmanage">{{ args.web_name }}</a>. Copyright &copy; 2016.</p>
+            <p>Powered by <a target="_blank" href="https://github.com/qqj1228/DDmanage">{{ args.app_name }}</a>. Copyright &copy; 2016.</p>
             <p><a target="_blank" href="http://www.cashqian.net/" target="_blank">www.cashqian.net</a>. All rights reserved.</p>
         </div>
     </div>
