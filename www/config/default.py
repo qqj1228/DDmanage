@@ -14,3 +14,7 @@ RANGE = 100
 # DEBUG = False
 # cookie密钥，必须设置，用于cookie加密
 SECRET_KEY = 'DDmanage'
+
+# Flask-SQLAlchemy配置项
+SQLALCHEMY_DATABASE_URI = ''
+SQLALCHEMY_TRACK_MODIFICATIONS = True

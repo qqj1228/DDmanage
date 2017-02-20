@@ -104,8 +104,8 @@ MANIFEST
 .vscode/
 
 # 自定义忽略文件
-www/static/upload/
-www/static/img/
-www/static/tmp/
+www/myapp/static/upload/
+www/myapp/static/img/
+www/myapp/static/tmp/
 www/config/user.py
 jsconfig.json

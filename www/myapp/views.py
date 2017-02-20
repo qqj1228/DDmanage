@@ -1,23 +1,17 @@
-#!/usr/bin/env python3
-# coding:utf-8
-
 import logging
 import os
 import shutil
 import re
-from flask import Flask, render_template, request, url_for, redirect, flash
+from flask import render_template, request, url_for, redirect, flash
+from myapp import app
 
 
 logging.basicConfig(level=logging.INFO)
-app = Flask(__name__)
-app.config.from_object('config.default')
-app.config.from_object('config.user')
 DWG_DIR = app.config.get('DWG_DIR')
 TMP_DIR = app.config.get('TMP_DIR')
 APP_NAME = app.config.get('APP_NAME')
 WEB_NAME = app.config.get('WEB_NAME')
 RANGE = app.config.get('RANGE')
-HOST = app.config.get('HOST')
 
 
 def getdir(dir=DWG_DIR):
@@ -113,5 +107,15 @@ def about():
     return render_template('about.html', args=args)
 
 
-if __name__ == '__main__':
-    app.run(host=HOST)
+@app.route('/login')
+def login():
+    args = dict()
+    args['app_name'] = APP_NAME
+    args['web_name'] = WEB_NAME
+    args['debug'] = app.config['DEBUG']
+    return render_template('login.html', args=args)
+
+
+@app.route('/signup')
+def signup():
+    pass
