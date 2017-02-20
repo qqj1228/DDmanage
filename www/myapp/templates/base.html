@@ -7,14 +7,14 @@
     {% block meta %}<!-- block meta  -->{% endblock %}
     <title>{% block title %}{% endblock %} - {{ args.web_name }}</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/uikit.gradient.min.css') }}">
+    <link rel="stylesheet" href="//cdn.bootcss.com/uikit/2.25.0/css/uikit.gradient.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/uikit.min.js') }}"></script>
+    <script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/uikit/2.25.0/js/uikit.min.js"></script>
     {% if args.debug %}
-        <script src="{{ url_for('static', filename='js/vue.js') }}"></script>
+        <script src="https://unpkg.com/vue@2.1.10/dist/vue.js"></script>
     {% else %}
-        <script src="{{ url_for('static', filename='js/vue.min.js') }}"></script>
+        <script src="https://unpkg.com/vue@2.1.10/dist/vue.min.js"></script>
     {% endif %}
     <script src="{{ url_for('static', filename='js/awesome.js') }}"></script>
     {% block script %}<!-- script  -->{% endblock %}
