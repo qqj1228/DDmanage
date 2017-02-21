@@ -3,7 +3,7 @@ import os
 import shutil
 import re
 from flask import render_template, request, url_for, redirect, flash
-from myapp import app
+from . import app
 
 
 logging.basicConfig(level=logging.INFO)

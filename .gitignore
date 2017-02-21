@@ -108,4 +108,5 @@ www/myapp/static/upload/
 www/myapp/static/img/
 www/myapp/static/tmp/
 www/config/user.py
+www/migrations/alembic.ini
 jsconfig.json
