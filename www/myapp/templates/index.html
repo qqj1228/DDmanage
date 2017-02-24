@@ -34,18 +34,20 @@
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="uk-alert uk-alert-warning">{{ message }}</div>
+                        <div class="uk-alert uk-alert-warning">
+                            <a href="" class="uk-alert-close uk-close"></a>
+                            <p>{{ message }}</p>
+                        </div>
                     {% endfor %}
-                {% else %}
-                    <ul class="uk-grid uk-grid-small uk-grid-width-1-2 uk-grid-width-medium-1-3 uk-grid-width-large-1-5" data-uk-grid-margin>
-                    {% for file in args.filelist[args.page.page_start:args.page.page_start+args.page.range] %}
-                        <li><div class="uk-panel uk-panel-box">
-                            <a target="_aboutblank" href="{{ url_for('show', dir=args.dir_cu, filename=file) }}">{{ file }}</a>
-                        </div></li>
-                    {% endfor %}
-                    </ul>
                 {% endif %}
             {% endwith %}
+            <ul class="uk-grid uk-grid-small uk-grid-width-1-2 uk-grid-width-medium-1-3 uk-grid-width-large-1-5" data-uk-grid-margin>
+            {% for file in args.filelist[args.page.page_start:args.page.page_start+args.page.range] %}
+                <li><div class="uk-panel uk-panel-box">
+                    <a target="_aboutblank" href="{{ url_for('show', dir=args.dir_cu, filename=file) }}">{{ file }}</a>
+                </div></li>
+            {% endfor %}
+            </ul>
         </div>
         <ul class="uk-pagination" data-uk-margin>
         {% for i in range(1, args.page.page_all+1) %}

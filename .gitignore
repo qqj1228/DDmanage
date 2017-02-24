@@ -103,10 +103,12 @@ MANIFEST
 # VS Code
 .vscode/
 
+# Pycharm
+.idea/
+
 # 自定义忽略文件
 www/myapp/static/upload/
 www/myapp/static/img/
 www/myapp/static/tmp/
 www/config/user.py
-www/migrations/alembic.ini
-jsconfig.json
+coverage/

@@ -5,16 +5,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% block meta %}<!-- block meta  -->{% endblock %}
-    <title>{% block title %}{% endblock %} - {{ args.web_name }}</title>
+    <title>{% block title %}{% endblock %} - {{ config['WEB_NAME'] }}</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="//cdn.bootcss.com/uikit/2.25.0/css/uikit.gradient.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
     <script src="//cdn.bootcss.com/uikit/2.25.0/js/uikit.min.js"></script>
-    {% if args.debug %}
-        <script src="https://unpkg.com/vue@2.1.10/dist/vue.js"></script>
+    <script src="//cdn.bootcss.com/crypto-js/3.1.2/rollups/sha1.js"></script>
+    {% if config['DEBUG'] %}
+        <script src="//cdn.bootcss.com/vue/2.1.10/vue.js"></script>
     {% else %}
-        <script src="https://unpkg.com/vue@2.1.10/dist/vue.min.js"></script>
+        <script src="//cdn.bootcss.com/vue/2.1.10/vue.min.js"></script>
     {% endif %}
     <script src="{{ url_for('static', filename='js/awesome.js') }}"></script>
     {% block script %}<!-- script  -->{% endblock %}
@@ -23,19 +24,19 @@
     <!-- menu -->
     <nav id="navbar" class="tm-navbar uk-navbar uk-margin-large-bottom uk-navbar-attached">
         <div class="uk-margin-large-left uk-margin-large-right">
-            <a class="uk-navbar-brand" href="{{ url_for('index') }}">{{ args.web_name }}</a>
+            <a class="uk-navbar-brand" href="{{ url_for('index') }}">{{ config['WEB_NAME'] }}</a>
             <ul class="uk-navbar-nav">
-                <li><a href="{{ url_for('index') }}">文件管理</a></li>
+                <li><a href="{{ url_for('index') }}">图纸预览</a></li>
                 <li><a href="{{ url_for('about') }}">关于</a></li>
             </ul>
             <div class="uk-navbar-flip">
                 <ul class="uk-navbar-nav">
-                {% if user %}
+                {% if current_user.is_authenticated %}
                     <li class="uk-parent" data-uk-dropdown>
-                        <a href="#0"><i class="uk-icon-user"></i> {{ user.name }} <i class="uk-icon-caret-down"></i></a>
+                        <a href="#0"><i class="uk-icon-user"></i> {{ current_user.name }} <i class="uk-icon-caret-down"></i></a>
                         <div class="uk-dropdown uk-dropdown-navbar uk-dropdown-small">
                             <ul class="uk-nav uk-nav-navbar">
-                                <li><a href="/user/{{ user.id }}"><i class="uk-icon-info-circle"></i> 用户信息</a></li>
+                                <li><a href="/user/{{ current_user.id }}"><i class="uk-icon-info-circle"></i> 用户信息</a></li>
                                 <li><a href="/manage"><i class="uk-icon-gear"></i> 后台管理</a></li>
                                 <li><a href="/logout"><i class="uk-icon-sign-out"></i> 登出</a></li>
                             </ul>
@@ -64,7 +65,7 @@
     <!-- footer -->
     <div class="uk-block uk-block-secondary uk-contrast">
         <div class="uk-margin-large-left uk-margin-large-right uk-text-center">
-            <p>Powered by <a target="_blank" href="https://github.com/qqj1228/DDmanage">{{ args.app_name }}</a>. Copyright &copy; 2016.</p>
+            <p>Powered by <a target="_blank" href="https://github.com/qqj1228/DDmanage">{{ config['APP_NAME'] }}</a>. Copyright &copy; 2016.</p>
             <p><a target="_blank" href="http://www.cashqian.net/" target="_blank">www.cashqian.net</a>. All rights reserved.</p>
         </div>
     </div>

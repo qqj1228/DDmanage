@@ -3,7 +3,6 @@
 
 from myapp import app
 
-HOST = app.config.get('HOST')
 
 if __name__ == '__main__':
-    app.run(host=HOST)
+    app.run(host=app.config.get('HOST'))

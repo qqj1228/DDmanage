@@ -23,6 +23,16 @@
     <!-- end sidebar -->
 
     <div class="uk-width-medium-4-5 uk-row-first">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="uk-alert uk-alert-warning">
+                        <a href="" class="uk-alert-close uk-close"></a>
+                        <p>{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <div class="uk-panel uk-panel-box uk-panel-box-primary">
             <h3 class="uk-panel-title">程序说明:</h3>
             <div class="">

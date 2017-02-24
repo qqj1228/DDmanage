@@ -3,14 +3,13 @@ import os
 import shutil
 import re
 from flask import render_template, request, url_for, redirect, flash
+from flask_login import login_required, logout_user
 from . import app
 
 
 logging.basicConfig(level=logging.INFO)
 DWG_DIR = app.config.get('DWG_DIR')
 TMP_DIR = app.config.get('TMP_DIR')
-APP_NAME = app.config.get('APP_NAME')
-WEB_NAME = app.config.get('WEB_NAME')
 RANGE = app.config.get('RANGE')
 
 
@@ -47,13 +46,12 @@ def getpage(filelist, page_cu):
 
 @app.route('/')
 @app.route('/<dir_cu>/<int:page_cu>')
+@login_required
 def index(dir_cu='', page_cu=1):
     dirlist = getdir()
     filelist = getfile(DWG_DIR + '/' + dir_cu)
     page = getpage(filelist, page_cu)
     args = dict()
-    args['app_name'] = APP_NAME
-    args['web_name'] = WEB_NAME
     args['dirlist'] = dirlist
     args['filelist'] = filelist
     args['dir_cu'] = dir_cu
@@ -78,7 +76,7 @@ def showdwg(dir, filename):
     args = dict()
     source = DWG_DIR + '/' + dir + '/' + filename
     dest = TMP_DIR + '/' + request.remote_addr.replace('.', '-')
-    shutil.copy(source, './static/' + dest)
+    shutil.copy(source, './myapp/static/' + dest)
     url = url_for('static', filename=dest, _external=True)
     args['filename'] = filename
     args['url'] = url
@@ -90,7 +88,7 @@ def showpdf(dir, filename):
     args = dict()
     source = DWG_DIR + '/' + dir + '/' + filename
     dest = TMP_DIR + '/' + request.remote_addr.replace('.', '-') + '.pdf'
-    shutil.copy(source, './static/' + dest)
+    shutil.copy(source, './myapp/static/' + dest)
     url = url_for('static', filename=dest, _external=True)
     args['filename'] = filename
     args['url'] = url
@@ -102,20 +100,24 @@ def about():
     dirlist = getdir()
     args = dict()
     args['dirlist'] = dirlist
-    args['app_name'] = APP_NAME
-    args['web_name'] = WEB_NAME
     return render_template('about.html', args=args)
 
 
 @app.route('/login')
 def login():
     args = dict()
-    args['app_name'] = APP_NAME
-    args['web_name'] = WEB_NAME
-    args['debug'] = app.config['DEBUG']
     return render_template('login.html', args=args)
 
 
 @app.route('/signup')
 def signup():
-    pass
+    args = dict()
+    return render_template('signup.html', args=args)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('您已退出本程序')
+    return redirect(url_for('about'))
