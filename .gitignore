@@ -107,7 +107,7 @@ MANIFEST
 .idea/
 
 # 自定义忽略文件
-www/myapp/static/upload/
+upload/
 www/myapp/static/img/
 www/myapp/static/tmp/
 www/config/user.py

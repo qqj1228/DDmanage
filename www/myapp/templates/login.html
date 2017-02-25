@@ -68,16 +68,6 @@
     <div class="uk-panel uk-margin-bottom uk-text-center">
         <img class="uk-border-circle" width="120" height="120" src="{{ url_for('static', filename='img/logo.svg') }}" alt="">
     </div>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="uk-alert uk-alert-danger" data-uk-alert>
-                    <a href="" class="uk-alert-close uk-close"></a>
-                    <p>{{ message }}</p>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
     <div id="error" class="uk-width-1-1"></div>
     <div id="loading" class="uk-width-1-1 uk-text-center uk-margin-bottom uk-position-z-index">
         <span><i class="uk-icon-spinner uk-icon-medium uk-icon-spin"></i> 正在处理...</span>

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %} 图纸管理 {% endblock %}
+{% block script %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/webuploader.css') }}">
+    <script src="//cdn.staticfile.org/webuploader/0.1.5/webuploader.min.js"></script>
+    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+    <link rel="stylesheet" href="//cdn.bootcss.com/uikit/2.25.0/css/components/progress.gradient.min.css">
+    <script>
+    $(function () {
+        $("#ctlBtn").height(32);
+        var pos = $("#picker").offset();
+        pos.left = pos.left + $("#picker").width() + 10;
+        $("#ctlBtn").offset(pos);
+    });
+    </script>
+{% endblock %}
+{% block content %}
+    <!-- sidebar -->
+    <div class="uk-width-medium-1-5">
+        <div class="uk-panel uk-panel-box">
+            <h3 class="uk-panel-title"><i class="uk-icon-folder-open"></i> 图纸管理</h3>
+        </div>
+    </div>
+    <!-- end sidebar -->
+
+    <div class="uk-width-medium-4-5 uk-row-first">
+        <div id="uploader" class="uk-panel uk-panel-box uk-panel-box-primary uk-panel-header">
+            <h3 class="uk-panel-title"><i class="uk-icon-file"></i> 图纸上传</h3>
+            <!--用来存放文件信息-->
+            <div id="thelist" class=""></div>
+            <div class="btns">
+                <div id="picker" class="uk-display-inline-block">选择文件</div>
+                <button id="ctlBtn" class="uk-button">开始上传</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

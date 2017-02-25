@@ -4,7 +4,7 @@
 import unittest
 import sys
 from getopt import getopt, GetoptError
-from myapp import app, models
+from myapp import app, models, tools
 
 
 class TestCase(unittest.TestCase):
@@ -38,6 +38,13 @@ class TestCase(unittest.TestCase):
         u1 = models.User(password='cash')
         u2 = models.User(password='cash')
         self.assertFalse(u1.password_hash == u2.password_hash)
+
+    def test_secure_filename(self):
+        self.assertEqual('abc.txt', tools.secure_filename('abc.txt'))
+        self.assertEqual('中文.txt', tools.secure_filename('中文.txt'))
+        self.assertEqual('abc.txt', tools.secure_filename('../abc.txt'))
+        self.assertEqual('abc-dfg.txt', tools.secure_filename('/abc/dfg.txt'))
+        self.assertEqual('abc-abc.txt', tools.secure_filename('abc../abc.txt'))
 
 
 if __name__ == '__main__':

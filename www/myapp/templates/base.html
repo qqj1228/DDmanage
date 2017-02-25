@@ -8,9 +8,11 @@
     <title>{% block title %}{% endblock %} - {{ config['WEB_NAME'] }}</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="//cdn.bootcss.com/uikit/2.25.0/css/uikit.gradient.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/uikit/2.25.0/css/components/notify.gradient.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
     <script src="//cdn.bootcss.com/uikit/2.25.0/js/uikit.min.js"></script>
+    <script src="//cdn.bootcss.com/uikit/2.25.0/js/components/notify.js"></script>
     <script src="//cdn.bootcss.com/crypto-js/3.1.2/rollups/sha1.js"></script>
     {% if config['DEBUG'] %}
         <script src="//cdn.bootcss.com/vue/2.1.10/vue.js"></script>
@@ -27,6 +29,7 @@
             <a class="uk-navbar-brand" href="{{ url_for('index') }}">{{ config['WEB_NAME'] }}</a>
             <ul class="uk-navbar-nav">
                 <li><a href="{{ url_for('index') }}">图纸预览</a></li>
+                <li><a href="{{ url_for('manage') }}">图纸管理</a></li>
                 <li><a href="{{ url_for('about') }}">关于</a></li>
             </ul>
             <div class="uk-navbar-flip">
@@ -70,5 +73,16 @@
         </div>
     </div>
     <!-- end footer -->
+
+    <!-- 显示flash通知消息 -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <script type="text/javascript">
+                UIkit.notify("<i class='uk-icon-info-circle'></i> {{ message }}");
+            </script>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 </body>
 </html>
