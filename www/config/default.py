@@ -12,8 +12,8 @@ RANGE = 100
 UPLOAD_FOLDER = '/users/cash/DDmanage/www/upload'
 
 # 是否启用调试模式，请一定不要在生产环境中启用
-# 默认值
-# DEBUG = False
+# 默认值为False
+DEBUG = False
 # cookie密钥，必须设置，用于cookie加密
 SECRET_KEY = 'DDmanage'
 

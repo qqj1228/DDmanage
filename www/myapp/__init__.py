@@ -19,4 +19,4 @@ login_manager.login_view = 'login'
 login_manager.login_message = '请登陆后再访问目标页面'
 login_manager.init_app(app)
 
-from . import views, apis, models
+from . import views, apis, models, APIError

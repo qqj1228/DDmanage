@@ -122,7 +122,7 @@ def signup():
 def logout():
     logout_user()
     flash('您已退出本程序')
-    return redirect(url_for('about'))
+    return redirect(url_for('login'))
 
 
 @app.route('/manage')
@@ -130,3 +130,10 @@ def logout():
 def manage():
     args = dict()
     return render_template('manage.html', args=args)
+
+
+@app.route('/user')
+@login_required
+def user():
+    args = dict()
+    return render_template('user.html', args=args)

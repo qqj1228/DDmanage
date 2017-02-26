@@ -12,13 +12,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
     <script src="//cdn.bootcss.com/uikit/2.25.0/js/uikit.min.js"></script>
-    <script src="//cdn.bootcss.com/uikit/2.25.0/js/components/notify.js"></script>
-    <script src="//cdn.bootcss.com/crypto-js/3.1.2/rollups/sha1.js"></script>
-    {% if config['DEBUG'] %}
-        <script src="//cdn.bootcss.com/vue/2.1.10/vue.js"></script>
-    {% else %}
-        <script src="//cdn.bootcss.com/vue/2.1.10/vue.min.js"></script>
-    {% endif %}
+    <script src="//cdn.bootcss.com/uikit/2.25.0/js/components/notify.min.js"></script>
     <script src="{{ url_for('static', filename='js/awesome.js') }}"></script>
     {% block script %}<!-- script  -->{% endblock %}
 </head>
@@ -26,7 +20,9 @@
     <!-- menu -->
     <nav id="navbar" class="tm-navbar uk-navbar uk-margin-large-bottom uk-navbar-attached">
         <div class="uk-margin-large-left uk-margin-large-right">
-            <a class="uk-navbar-brand" href="{{ url_for('index') }}">{{ config['WEB_NAME'] }}</a>
+            <a class="uk-navbar-brand" href="{{ url_for('index') }}">
+                <img class="uk-border-circle" width="40" height="40" src="{{ url_for('static', filename='img/logo.svg') }}" alt=""> {{ config['WEB_NAME'] }}
+            </a>
             <ul class="uk-navbar-nav">
                 <li><a href="{{ url_for('index') }}">图纸预览</a></li>
                 <li><a href="{{ url_for('manage') }}">图纸管理</a></li>
@@ -39,9 +35,9 @@
                         <a href="#0"><i class="uk-icon-user"></i> {{ current_user.name }} <i class="uk-icon-caret-down"></i></a>
                         <div class="uk-dropdown uk-dropdown-navbar uk-dropdown-small">
                             <ul class="uk-nav uk-nav-navbar">
-                                <li><a href="/user/{{ current_user.id }}"><i class="uk-icon-info-circle"></i> 用户信息</a></li>
-                                <li><a href="/manage"><i class="uk-icon-gear"></i> 后台管理</a></li>
-                                <li><a href="/logout"><i class="uk-icon-sign-out"></i> 登出</a></li>
+                                <li><a href="{{ url_for('user') }}"><i class="uk-icon-info-circle"></i> 用户信息</a></li>
+                                <li><a href="{{ url_for('manage') }}"><i class="uk-icon-gear"></i> 后台管理</a></li>
+                                <li><a href="{{ url_for('logout') }}"><i class="uk-icon-sign-out"></i> 登出</a></li>
                             </ul>
                         </div>
                     </li>
@@ -68,7 +64,7 @@
     <!-- footer -->
     <div class="uk-block uk-block-secondary uk-contrast">
         <div class="uk-margin-large-left uk-margin-large-right uk-text-center">
-            <p>Powered by <a target="_blank" href="https://github.com/qqj1228/DDmanage">{{ config['APP_NAME'] }}</a>. Copyright &copy; 2016.</p>
+            <p>Powered by <a target="_blank" href="https://github.com/qqj1228/DDmanage">{{ config['APP_NAME'] }}</a>. Copyright &copy; 2017.</p>
             <p><a target="_blank" href="http://www.cashqian.net/" target="_blank">www.cashqian.net</a>. All rights reserved.</p>
         </div>
     </div>
