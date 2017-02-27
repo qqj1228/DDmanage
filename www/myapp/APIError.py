@@ -2,12 +2,13 @@
 # coding:utf-8
 
 from flask import jsonify
+
 from . import app
+
 
 # 该组APIError用于处理API调用后不符合应用逻辑的异常，需要传递到客户端处
 # 故没有设置HTTP状态码，Flask会默认为200，如果加了自定义HTTP状态码的话
 # Flask就会返回出错状态，错误信息无法传递到客户端处
-
 class APIError(Exception):
     '''
     The base APIError class  which contains error(required), data(optional)
@@ -55,23 +56,5 @@ class APIPermissionError(APIError):
 
 @app.errorhandler(APIError)
 def handle_api_error(error):
-    response = jsonify(error.to_dict())
-    return response
-
-
-@app.errorhandler(APIValueError)
-def handle_api_value_error(error):
-    response = jsonify(error.to_dict())
-    return response
-
-
-@app.errorhandler(APIResourceNotFoundError)
-def handle_api_resource_not_found_error(error):
-    response = jsonify(error.to_dict())
-    return response
-
-
-@app.errorhandler(APIPermissionError)
-def handle_api_permission_error(error):
     response = jsonify(error.to_dict())
     return response

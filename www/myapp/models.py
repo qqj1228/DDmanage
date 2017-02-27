@@ -1,5 +1,8 @@
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import current_app
 from flask_login import UserMixin
+from werkzeug.security import check_password_hash, generate_password_hash
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+
 from . import db, login_manager
 
 
@@ -27,6 +30,20 @@ class User(db.Model, UserMixin):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def generate_forgot_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'forget': self.id})
+
+    def verify_forgot_token(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return False
+        if data.get('forget') != self.id:
+            return False
+        return True
 
     def __repr__(self):
         return 'User %r' % self.name

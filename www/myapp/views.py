@@ -1,11 +1,13 @@
 import logging
 import os
-import shutil
 import re
-from flask import render_template, request, url_for, redirect, flash
-from flask_login import login_required, logout_user
-from . import app
+import shutil
 
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import login_required, logout_user
+
+from . import app
+from .models import User
 
 logging.basicConfig(level=logging.INFO)
 DWG_DIR = app.config.get('DWG_DIR')
@@ -107,14 +109,12 @@ def about():
 
 @app.route('/login')
 def login():
-    args = dict()
-    return render_template('login.html', args=args)
+    return render_template('login.html')
 
 
 @app.route('/signup')
 def signup():
-    args = dict()
-    return render_template('signup.html', args=args)
+    return render_template('signup.html')
 
 
 @app.route('/logout')
@@ -128,12 +128,19 @@ def logout():
 @app.route('/manage')
 @login_required
 def manage():
-    args = dict()
-    return render_template('manage.html', args=args)
+    return render_template('manage.html')
 
 
 @app.route('/user')
 @login_required
 def user():
-    args = dict()
-    return render_template('user.html', args=args)
+    return render_template('user.html')
+
+
+@app.route('/forgot_password/<email>/<token>')
+def forgot_password(email, token):
+    u = User.query.filter_by(email=email).first()
+    if not u.verify_forgot_token(token):
+        flash('验证失败或已过期！')
+        return redirect(url_for('login'))
+    return render_template('forgot_password.html', email=u.email)

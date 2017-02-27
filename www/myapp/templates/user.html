@@ -29,7 +29,7 @@ $(function () {
                     return $form.showFormError('两次输入的密码不一致');
                 }
                 $form.postJSON("{{ url_for('api_modify_password') }}", {
-                    user_id: '{{ current_user.id }}',
+                    email: '{{ current_user.email }}',
                     password0: this.password0==='' ? '' : CryptoJS.SHA1('{{ current_user.email }}' + ':' + this.password0).toString(),
                     password1: this.password1==='' ? '' : CryptoJS.SHA1('{{ current_user.email }}' + ':' + this.password1).toString(),
                     password2: this.password2==='' ? '' : CryptoJS.SHA1('{{ current_user.email }}' + ':' + this.password2).toString()

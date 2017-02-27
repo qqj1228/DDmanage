@@ -52,13 +52,13 @@
                     }
                     var email = this.email.trim().toLowerCase();
                     $('#loading').show();
-                    getJSON("{{ url_for('/api/reset_password') }}", { email: email }, function (err, r) {
+                    postJSON("{{ url_for('api_forgot_password') }}", { email: email }, function (err, r) {
                         $('#loading').hide();
                         if (err) {
                             error(err);
                             return;
                         }
-                        alert('重置后的密码已发送，请登陆您的email查看');
+                        alert('请在一小时内登陆您的email进行后续操作');
                         return;
                     });
                 }

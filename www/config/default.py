@@ -8,8 +8,19 @@ WEB_NAME = '图纸管理程序'
 APP_NAME = 'DDmanage'
 # 每页显示多少个文件，大于100就会感到明显延时
 RANGE = 100
+
 # 上传文件存放地址
 UPLOAD_FOLDER = '/users/cash/DDmanage/www/upload'
+
+# 以下email选项用于发送重置密码确认邮件
+# 管理员email账号
+EMAIL_ADMIN = ''
+# 管理员email密码
+EMAIL_PWORD = ''
+# 管理员smtp服务器地址
+SMTP_SRV = ''
+# 管理员smtp服务器端口
+SMTP_PORT = '25'
 
 # 是否启用调试模式，请一定不要在生产环境中启用
 # 默认值为False

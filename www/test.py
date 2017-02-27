@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # coding:utf-8
 
-import unittest
 import sys
-from getopt import getopt, GetoptError
+import unittest
+from getopt import GetoptError, getopt
+
 from myapp import app, models, tools
 
 
