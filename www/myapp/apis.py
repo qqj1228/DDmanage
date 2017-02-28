@@ -43,6 +43,8 @@ def api_login():
     if u is not None and u.verify_password(password):
         login_user(u, rememberme)
         flash('用户: %s 已登录' % u.name)
+        if not u.confirmed:
+            flash('请联系管理员开通权限')
         return jsonify({'name': u.name})
     else:
         raise APIValueError('password', '密码错误！')
@@ -107,3 +109,9 @@ def api_upload():
     filename = secure_filename(file.filename)
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     return jsonify({'done': True})
+
+
+@app.route('/api/archive', methods=['POST'])
+@login_required
+def api_archive():
+    pass

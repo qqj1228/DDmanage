@@ -1,11 +1,13 @@
-# 需要管理的图纸文档目录
+# 需要管理的图纸文档目录填写绝对路径
 DWG_DIR = '/users/dwg'
-# 用于图纸文档预览的缓存目录
+# 用于图纸文档预览的缓存目录填写相对于static的相对路径
 TMP_DIR = 'tmp'
 # 网站名称
 WEB_NAME = '图纸管理程序'
 # 程序名称
 APP_NAME = 'DDmanage'
+# 网站logo图片地址填写相对于static的相对路径
+WEB_LOGO = 'img/logo.svg'
 # 每页显示多少个文件，大于100就会感到明显延时
 RANGE = 100
 

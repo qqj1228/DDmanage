@@ -7,16 +7,29 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/uikit/2.25.0/css/components/progress.gradient.min.css">
     <script>
     $(function () {
-        $("#ctlBtn").height(32);
         var pos = $("#picker").offset();
         pos.left = pos.left + $("#picker").width() + 10;
+        $("#ctlBtn").height(32);
         $("#ctlBtn").offset(pos);
+        pos.left = pos.left + $("#ctlBtn").outerWidth() + 10;
+        $("#archive").height(32);
+        $("#archive").offset(pos);
+
+        $("#archive").click(function(){
+            console.info('click');
+        });
     });
     </script>
 {% endblock %}
 {% block content %}
     <!-- sidebar -->
     <div class="uk-width-medium-1-5">
+        <div class="uk-panel uk-panel-box uk-text-center">
+            <img class="uk-border-circle" width="100" height="100" src="{{ url_for('static', filename=config['WEB_LOGO']) }}" alt="">
+            <p>本程序仅能预览AutoCAD图纸和pdf图纸。AutoCAD图纸预览请使用IE内核浏览器，版本不低于IE9。首次使用请下载安装
+            <a href="./MxDrawX.zip">IE浏览器插件</a>。
+            若无法预览pdf图纸，则需要安装 <a href="./pdf.exe">pdf阅读软件</a>。</p>
+        </div>
         <div class="uk-panel uk-panel-box">
             <h3 class="uk-panel-title"><i class="uk-icon-folder-open"></i> 图纸管理</h3>
         </div>
@@ -31,6 +44,7 @@
             <div class="btns">
                 <div id="picker" class="uk-display-inline-block">选择文件</div>
                 <button id="ctlBtn" class="uk-button">开始上传</button>
+                <button id="archive" class="uk-button">图纸入库</button>
             </div>
         </div>
     </div>

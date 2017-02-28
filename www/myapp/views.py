@@ -3,7 +3,7 @@ import os
 import re
 import shutil
 
-from flask import flash, redirect, render_template, request, url_for
+from flask import flash, redirect, render_template, request, url_for, send_from_directory, current_app, make_response
 from flask_login import login_required, logout_user
 
 from . import app
@@ -79,7 +79,7 @@ def showdwg(dir, filename):
     args = dict()
     source = os.path.join(DWG_DIR, dir, filename)
     dest = os.path.join(TMP_DIR, request.remote_addr.replace('.', '-'))
-    shutil.copy(source, './myapp/static/' + dest)
+    shutil.copy(source, os.path.join('myapp/static/', dest))
     url = url_for('static', filename=dest, _external=True)
     args['filename'] = filename
     args['url'] = url
@@ -89,22 +89,26 @@ def showdwg(dir, filename):
 @app.route('/showpdf/<dir>/<filename>')
 @login_required
 def showpdf(dir, filename):
-    args = dict()
     source = os.path.join(DWG_DIR, dir, filename)
     dest = os.path.join(TMP_DIR, request.remote_addr.replace('.', '-') + '.pdf')
-    shutil.copy(source, os.path.join('./myapp/static/', dest))
-    url = url_for('static', filename=dest, _external=True)
+    shutil.copy(source, os.path.join('myapp/static/', dest))
+    # return redirect(url_for('static', filename=dest))
+    url = url_for('static', filename=dest)
+    args = dict()
     args['filename'] = filename
     args['url'] = url
     return render_template('showpdf.html', args=args)
 
 
+@app.route('/tmp/<filename>')
+@login_required
+def tmp_file(filename):
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename=filename)
+
+
 @app.route('/about')
 def about():
-    dirlist = getdir()
-    args = dict()
-    args['dirlist'] = dirlist
-    return render_template('about.html', args=args)
+    return render_template('about.html')
 
 
 @app.route('/login')
