@@ -1,3 +1,4 @@
+# coding:utf-8
 # myapp/__init__.py
 
 from flask import Flask

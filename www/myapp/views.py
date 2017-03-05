@@ -1,18 +1,26 @@
+# coding:utf-8
+
 import logging
 import os
 import re
 import shutil
 
-from flask import flash, redirect, render_template, request, url_for, send_from_directory, current_app, make_response
+from flask import flash, redirect, render_template, request, url_for, send_from_directory, current_app
 from flask_login import login_required, logout_user
 
 from . import app
-from .models import User
+from .models import User, Permission
 
 logging.basicConfig(level=logging.INFO)
 DWG_DIR = app.config.get('DWG_DIR')
 TMP_DIR = app.config.get('TMP_DIR')
 RANGE = app.config.get('RANGE')
+
+
+# 把Permission类加入模板上下文
+@app.context_processor
+def inject_permissions():
+    return dict(Permission=Permission)
 
 
 def getdir(dir=DWG_DIR):

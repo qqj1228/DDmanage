@@ -56,12 +56,7 @@ $(function () {
 {% block content %}
 <!-- sidebar -->
 <div class="uk-width-medium-1-5">
-    <div class="uk-panel uk-panel-box uk-text-center">
-        <img class="uk-border-circle" width="100" height="100" src="{{ url_for('static', filename=config['WEB_LOGO']) }}" alt="">
-        <p>本程序仅能预览AutoCAD图纸和pdf图纸。AutoCAD图纸预览请使用IE内核浏览器，版本不低于IE9。首次使用请下载安装
-        <a href="./MxDrawX.zip">IE浏览器插件</a>。
-        若无法预览pdf图纸，则需要安装 <a href="./pdf.exe">pdf阅读软件</a>。</p>
-    </div>
+    {% include 'sidebar.html' %}
 </div>
 <!-- end sidebar -->
 

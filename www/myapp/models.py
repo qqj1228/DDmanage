@@ -1,3 +1,5 @@
+# coding:utf-8
+
 from flask import current_app
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -18,7 +20,16 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(64), nullable=False, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
-    confirmed = db.Column(db.Boolean, nullable=False, default=False)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if current_app.config['TESTING']:
+            self.name = 'test'
+            self.email = 'test@test.com'
+        if self.email == current_app.config['EMAIL_ADMIN']:
+            self.role_r = Role.query.filter_by(permission=0xff).first()
+        else:
+            self.role_r = Role.query.filter_by(default=True).first()
 
     @property
     def password(self):
@@ -45,14 +56,48 @@ class User(db.Model, UserMixin):
             return False
         return True
 
+    def can(self, permission):
+        return (self.role_r.permission & permission) == permission
+
+    def is_admin(self):
+        return self.can(Permission.ADMIN)
+
     def __repr__(self):
         return 'User %r' % self.name
 
 
+class Permission:
+    DEFAULT = 0x00
+    DWG_BROWSE = 0x01
+    DWG_UPDOWN = 0x02
+    FILE_BROWSE = 0x04
+    FILE_UPDOWN = 0x08
+    ADMIN = 0x80
+
+
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
+    name = db.Column(db.String(64), nullable=False, unique=True)
+    default = db.Column(db.Boolean, default=False, index=True)
+    permission = db.Column(db.Integer)
     users = db.relationship('User', backref='role_r', lazy='dynamic')
+
+    @staticmethod
+    def insert_roles():
+        roles = {
+            '默认用户': (Permission.DEFAULT, True),
+            '普通用户': (Permission.DWG_BROWSE | Permission.FILE_BROWSE | Permission.FILE_UPDOWN, False),
+            '图纸管理员': (Permission.DWG_BROWSE | Permission.DWG_UPDOWN | Permission.FILE_BROWSE | Permission.FILE_UPDOWN, False),
+            '系统管理员': (0xff, False)
+        }
+        for r in roles:
+            role = Role.query.filter_by(name=r).first()
+            if role is None:
+                role = Role(name=r)
+            role.permission = roles[r][0]
+            role.default = roles[r][1]
+            db.session.add(role)
+        db.session.commit()
 
     def __repr__(self):
         return 'Role %r' % self.name

@@ -1,3 +1,5 @@
+# coding:utf-8
+
 import logging
 import os
 import smtplib
@@ -11,7 +13,7 @@ from flask_login import login_required, login_user
 from . import app, db
 from .APIError import (APIPermissionError, APIResourceNotFoundError,
                        APIValueError)
-from .models import Role, User
+from .models import User
 from .tools import secure_filename
 
 logging.basicConfig(level=logging.INFO)
@@ -22,12 +24,10 @@ def api_signup():
     name = request.json['name']
     email = request.json['email']
     password = request.json['password']
-    r = Role.query.filter_by(name='user').first()
-    confirmed = False
     u = User.query.filter_by(email=email).first()
     if u is not None:
         raise APIValueError('email', '该email已被注册！')
-    u = User(name=name, email=email, password=password, role_r=r, confirmed=confirmed)
+    u = User(name=name, email=email, password=password)
     db.session.add(u)
     db.session.commit()
     flash('注册成功请登录')
@@ -43,8 +43,8 @@ def api_login():
     if u is not None and u.verify_password(password):
         login_user(u, rememberme)
         flash('用户: %s 已登录' % u.name)
-        if not u.confirmed:
-            flash('请联系管理员开通权限')
+        if u.role_r.default:
+            flash('请联系管理员确认身份')
         return jsonify({'name': u.name})
     else:
         raise APIValueError('password', '密码错误！')
@@ -78,7 +78,7 @@ def _format_addr(s):
 
 @app.route('/api/forgot_password', methods=['POST'])
 def api_forgot_password():
-    from_addr = current_app.config['EMAIL_ADMIN']
+    from_addr = current_app.config['EMAIL_FROM']
     password = current_app.config['EMAIL_PWORD']
     to_addr = request.json['email']
     smtp_server = current_app.config['SMTP_SRV']

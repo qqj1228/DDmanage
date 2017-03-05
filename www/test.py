@@ -22,23 +22,27 @@ class TestCase(unittest.TestCase):
         self.assertIn('当前打开的目录', response.get_data(as_text=True))
 
     def test_password_setter(self):
-        u = models.User(password='cash')
-        self.assertTrue(u.password_hash is not None)
+        with app.app_context():
+            u = models.User(password='cash')
+            self.assertTrue(u.password_hash is not None)
 
     def test_password_getter_error(self):
-        u = models.User(password='cash')
-        with self.assertRaises(AttributeError):
-            u.password
+        with app.app_context():
+            u = models.User(password='cash')
+            with self.assertRaises(AttributeError):
+                u.password
 
     def test_password_verify(self):
-        u = models.User(password='cash')
-        self.assertTrue(u.verify_password('cash'))
-        self.assertFalse(u.verify_password('qian'))
+        with app.app_context():
+            u = models.User(password='cash')
+            self.assertTrue(u.verify_password('cash'))
+            self.assertFalse(u.verify_password('qian'))
 
     def test_password_salts_random(self):
-        u1 = models.User(password='cash')
-        u2 = models.User(password='cash')
-        self.assertFalse(u1.password_hash == u2.password_hash)
+        with app.app_context():
+            u1 = models.User(password='cash')
+            u2 = models.User(password='cash')
+            self.assertFalse(u1.password_hash == u2.password_hash)
 
     def test_secure_filename(self):
         self.assertEqual('abc.txt', tools.secure_filename('abc.txt'))
@@ -46,6 +50,13 @@ class TestCase(unittest.TestCase):
         self.assertEqual('abc.txt', tools.secure_filename('../abc.txt'))
         self.assertEqual('abc-dfg.txt', tools.secure_filename('/abc/dfg.txt'))
         self.assertEqual('abc-abc.txt', tools.secure_filename('abc../abc.txt'))
+
+    def test_roles_and_permissions(self):
+        with app.app_context():
+            models.Role.insert_roles()
+            u = models.User(email='john@example.com', password='cat')
+            self.assertTrue(u.can(models.Permission.DEFAULT))
+            self.assertFalse(u.can(models.Permission.DWG_BROWSE))
 
 
 if __name__ == '__main__':

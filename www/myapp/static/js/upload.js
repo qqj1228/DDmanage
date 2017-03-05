@@ -2,10 +2,11 @@
 // 使用WebUploader组件实现文件上传功能
 // 官网地址：http://fex.baidu.com/webuploader/
 
-jQuery(function() {
+$(function() {
     var $ = jQuery,
         $list = $('#thelist'),
         $btn = $('#ctlBtn'),
+        $arc = $("#archive"),
         state = 'pending',
         uploader;
 
@@ -79,6 +80,16 @@ jQuery(function() {
     });
 
     $btn.on( 'click', function() {
+        if ( state === 'uploading' ) {
+            uploader.stop();
+        } else {
+            uploader.upload();
+        }
+    });
+
+    $arc.on( 'click', function() {
+        uploader.option('server', '/api/arc_upload');
+        console.info(uploader.option());
         if ( state === 'uploading' ) {
             uploader.stop();
         } else {
