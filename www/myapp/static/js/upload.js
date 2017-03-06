@@ -40,7 +40,7 @@ $(function() {
 
         // 避免重复创建
         if ( !$percent.length ) {
-            $percent = $('<div class="uk-progress uk-progress-small uk-progress-striped uk-active">' +
+            $percent = $('<div class="uk-progress uk-progress-mini uk-active">' +
               '<div class="uk-progress-bar" style="width: 0%">' +
               '</div>' +
             '</div>').appendTo( $li ).find('.uk-progress-bar');
@@ -74,8 +74,10 @@ $(function() {
 
         if ( state === 'uploading' ) {
             $btn.text('暂停上传');
+            $arc.text('暂停入库');
         } else {
             $btn.text('开始上传');
+            $arc.text('开始入库');
         }
     });
 
@@ -88,8 +90,7 @@ $(function() {
     });
 
     $arc.on( 'click', function() {
-        uploader.option('server', '/api/arc_upload');
-        console.info(uploader.option());
+        uploader.option('server', '/api/archive');
         if ( state === 'uploading' ) {
             uploader.stop();
         } else {

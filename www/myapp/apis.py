@@ -2,13 +2,14 @@
 
 import logging
 import os
+import re
 import smtplib
 from email.header import Header
 from email.mime.text import MIMEText
 from email.utils import formataddr, parseaddr
 
 from flask import flash, jsonify, request, current_app, url_for
-from flask_login import login_required, login_user
+from flask_login import login_required, login_user, current_user
 
 from . import app, db
 from .APIError import (APIPermissionError, APIResourceNotFoundError,
@@ -107,11 +108,32 @@ def api_upload():
     if file is None:
         APIResourceNotFoundError('file', '未接收到上传的文件！')
     filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    dir = str(current_user.id) + '-' + current_user.name
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], dir, filename))
     return jsonify({'done': True})
+
+
+def todir(filename):
+    if filename.startswith('HT.HRCS') or filename.startswith('HRCS') or filename.startswith('HT.RSCS'):
+        return 'HRCS'
+    if filename.startswith('HT'):
+        s = re.match(r'^(HT\.[\S])', filename, re.M | re.I)
+        return s.group(1)
+    else:
+        s = re.match(r'^([\S])', filename, re.M | re.I)
+        return s.group(1)
+    return filename[0]
 
 
 @app.route('/api/archive', methods=['POST'])
 @login_required
 def api_archive():
-    pass
+    file = request.files['file']
+    if file is None:
+        APIResourceNotFoundError('file', '未接收到上传的文件！')
+    filename = secure_filename(file.filename)
+    path = os.path.join(current_app.config['DWG_DIR'], todir(filename))
+    if not os.path.isdir(path):
+        os.mkdir(path)
+    file.save(os.path.join(path, filename))
+    return jsonify({'done': True})

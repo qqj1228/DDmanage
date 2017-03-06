@@ -5,7 +5,7 @@ import sys
 import unittest
 from getopt import GetoptError, getopt
 
-from myapp import app, models, tools
+from myapp import app, models, tools, apis
 
 
 class TestCase(unittest.TestCase):
@@ -57,6 +57,18 @@ class TestCase(unittest.TestCase):
             u = models.User(email='john@example.com', password='cat')
             self.assertTrue(u.can(models.Permission.DEFAULT))
             self.assertFalse(u.can(models.Permission.DWG_BROWSE))
+
+    def test_todir(self):
+        self.assertEqual('HRCS', apis.todir('HT.HRCS95.41-00'))
+        self.assertEqual('HRCS', apis.todir('HRCS95.41-00'))
+        self.assertEqual('HRCS', apis.todir('HT.RSCS2.41-00'))
+        self.assertEqual('HT.0', apis.todir('HT.0M20.41-00'))
+        self.assertEqual('HT.a', apis.todir('HT.aM20.41-00'))
+        self.assertEqual('HT.A', apis.todir('HT.AM20.41-00'))
+        self.assertEqual('H', apis.todir('HM20.41-00'))
+        self.assertEqual('4', apis.todir('4M20.41-00'))
+        self.assertEqual('S', apis.todir('S6M20.41-00'))
+        self.assertEqual('我', apis.todir('我的文件'))
 
 
 if __name__ == '__main__':

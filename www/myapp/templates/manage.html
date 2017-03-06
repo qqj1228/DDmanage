@@ -6,15 +6,13 @@
     <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
     <link rel="stylesheet" href="//cdn.bootcss.com/uikit/2.25.0/css/components/progress.gradient.min.css">
     <script>
-    $(function () {
-        var pos = $("#picker").offset();
-        pos.left = pos.left + $("#picker").width() + 10;
-        $("#ctlBtn").height(32);
-        $("#ctlBtn").offset(pos);
-        pos.left = pos.left + $("#ctlBtn").outerWidth() + 10;
-        $("#archive").height(32);
-        $("#archive").offset(pos);
-    });
+    // $(function () {
+    //     var pos = $("#picker").offset();
+    //     pos.left = pos.left + $("#picker").width() + 10;
+    //     $("#ctlBtn").offset(pos);
+    //     pos.left = pos.left + $("#ctlBtn").outerWidth() + 10;
+    //     $("#archive").offset(pos);
+    // });
     </script>
 {% endblock %}
 {% block content %}
@@ -22,21 +20,29 @@
     <div class="uk-width-medium-1-5">
         {% include 'sidebar.html' %}
         <div class="uk-panel uk-panel-box">
-            <h3 class="uk-panel-title"><i class="uk-icon-folder-open"></i> 图纸管理</h3>
+            <h3 class="uk-panel-title"><i class="uk-icon-download"></i> 图纸下载</h3>
+            <ul class="uk-nav uk-nav-side">
+                <li><a href=""><i class="uk-icon-user"></i> 个人图纸</a></li>
+                <li class="uk-active"><a href=""><i class="uk-icon-users"></i> 存档图纸</a></li>
+            </ul>
         </div>
     </div>
     <!-- end sidebar -->
 
     <div class="uk-width-medium-4-5 uk-row-first">
         <div id="uploader" class="uk-panel uk-panel-box uk-panel-box-primary uk-panel-header">
-            <h3 class="uk-panel-title"><i class="uk-icon-file"></i> 图纸上传</h3>
+            <h3 class="uk-panel-title"><i class="uk-icon-upload"></i> 图纸上传</h3>
             <!--用来存放文件信息-->
             <div id="thelist" class=""></div>
             <div class="btns">
-                <div id="picker" class="uk-display-inline-block">选择文件</div>
-                <button id="ctlBtn" class="uk-button">开始上传</button>
-                <button id="archive" class="uk-button">图纸入库</button>
+                <!--<div id="picker" class="uk-display-inline-block">选择文件</div>-->
+                <a id="picker" class="uk-button uk-button-primary">选择文件</a>
+                <button id="ctlBtn" class="uk-button uk-button-success">开始上传</button>
+                <button id="archive" class="uk-button uk-button-danger">开始入库</button>
             </div>
+        </div>
+        <div id="uploader" class="uk-panel uk-panel-box uk-panel-box-primary uk-panel-header">
+            <h3 class="uk-panel-title"><i class="uk-icon-download"></i> 图纸下载</h3>
         </div>
     </div>
 {% endblock %}
