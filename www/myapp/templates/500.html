@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %} 500 Internal Server Error {% endblock %}
+{% block script %}
+{% endblock %}
+{% block content %}
+<!-- sidebar -->
+<div class="uk-width-medium-1-5">
+    {% include 'sidebar.html' %}
+</div>
+<!-- end sidebar -->
+
+<div class="uk-width-medium-4-5 uk-row-first">
+    <div class="uk-alert uk-alert-large uk-alert-danger">
+        <h2>500 Internal Server Error</h2>
+        <p>服务器出错</p>
+    </div>
+</div>
+{% endblock %}

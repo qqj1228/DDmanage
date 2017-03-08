@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %} 404 Not Found {% endblock %}
+{% block script %}
+{% endblock %}
+{% block content %}
+<!-- sidebar -->
+<div class="uk-width-medium-1-5">
+    {% include 'sidebar.html' %}
+</div>
+<!-- end sidebar -->
+
+<div class="uk-width-medium-4-5 uk-row-first">
+    <div class="uk-alert uk-alert-large uk-alert-danger">
+        <h2>404 Not Found</h2>
+        <p>您请求的页面/资源未找到</p>
+    </div>
+</div>
+{% endblock %}

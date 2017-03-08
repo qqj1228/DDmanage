@@ -46,17 +46,6 @@
                     </tr>
                 </tbody>
             </table>
-
-            <ul class="uk-pagination" data-uk-margin>
-            {% for i in range(1, page.page_all+1) %}
-                {% if page_cu == i %}
-                    <li class="uk-active"><span>{{ i }}</span></li>
-                {% else %}
-                    <li><a href="{{ url_for('index', dir_cu=args.dir_cu, page_cu=i) }}">{{ i }}</a></li>
-                {% endif %}
-            {% endfor %}
-            </ul>
-
             <!-- 模态对话框:编辑用户身份 -->
             <div id="edit" class="uk-modal">
                 <div class="uk-modal-dialog">

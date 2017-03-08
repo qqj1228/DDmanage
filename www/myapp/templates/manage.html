@@ -39,7 +39,9 @@
                 <!--<div id="picker" class="uk-display-inline-block">选择文件</div>-->
                 <a id="picker" class="uk-button uk-button-primary">选择文件</a>
                 <button id="ctlBtn" class="uk-button uk-button-success">开始上传</button>
+                {% if current_user.can(Permission.DWG_UPDOWN) %}
                 <button id="archive" class="uk-button uk-button-danger">开始入库</button>
+                {% endif %}
             </div>
         </div>
         <div id="uploader" class="uk-panel uk-panel-box uk-panel-box-primary uk-panel-header">

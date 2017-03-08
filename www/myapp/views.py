@@ -24,6 +24,21 @@ def inject_permissions():
     return dict(Permission=Permission)
 
 
+@app.errorhandler(404)
+def not_found(e):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500
+
+
+@app.errorhandler(403)
+def Forbidden(e):
+    return render_template('403.html'), 403
+
+
 def getdir(dir=DWG_DIR):
     dirlist_out = []
     dirlist = os.listdir(dir)
