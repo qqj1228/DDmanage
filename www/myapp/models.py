@@ -62,8 +62,16 @@ class User(db.Model, UserMixin):
     def is_admin(self):
         return self.can(Permission.ADMIN)
 
+    def to_json(self):
+        json_user = {
+            'name': self.name,
+            'email': self.email,
+            'role_name': self.role_r.name
+        }
+        return json_user
+
     def __repr__(self):
-        return 'User %r' % self.name
+        return 'User-%r' % self.name
 
 
 class Permission:
@@ -99,5 +107,11 @@ class Role(db.Model):
             db.session.add(role)
         db.session.commit()
 
+    def to_json(self):
+        json_role = {
+            'name': self.name
+        }
+        return json_role
+
     def __repr__(self):
-        return 'Role %r' % self.name
+        return 'Role-%r' % self.name

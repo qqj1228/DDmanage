@@ -10,6 +10,7 @@ from flask_login import login_required, logout_user
 
 from . import app
 from .models import User, Permission
+from .tools import admin_required, permission_required
 
 logging.basicConfig(level=logging.INFO)
 DWG_DIR = app.config.get('DWG_DIR')
@@ -71,6 +72,7 @@ def index(dir_cu='', page_cu=1):
 
 @app.route('/show/<dir>/<filename>')
 @login_required
+@permission_required(Permission.DWG_BROWSE)
 def show(dir, filename):
     if re.search(r'\.d[wx][gft]$', filename, re.M | re.I):
         return redirect(url_for('showdwg', dir=dir, filename=filename))
@@ -83,6 +85,7 @@ def show(dir, filename):
 
 @app.route('/showdwg/<dir>/<filename>')
 @login_required
+@permission_required(Permission.DWG_BROWSE)
 def showdwg(dir, filename):
     args = dict()
     source = os.path.join(DWG_DIR, dir, filename)
@@ -96,6 +99,7 @@ def showdwg(dir, filename):
 
 @app.route('/showpdf/<dir>/<filename>')
 @login_required
+@permission_required(Permission.DWG_BROWSE)
 def showpdf(dir, filename):
     source = os.path.join(DWG_DIR, dir, filename)
     dest = os.path.join(TMP_DIR, request.remote_addr.replace('.', '-') + '.pdf')
@@ -139,6 +143,7 @@ def logout():
 
 @app.route('/manage')
 @login_required
+@permission_required(Permission.DWG_BROWSE)
 def manage():
     return render_template('manage.html')
 
@@ -156,3 +161,10 @@ def forgot_password(email, token):
         flash('验证失败或已过期！')
         return redirect(url_for('login'))
     return render_template('forgot_password.html', email=u.email)
+
+
+@app.route('/admin')
+@login_required
+@admin_required
+def admin():
+    return render_template('admin.html')

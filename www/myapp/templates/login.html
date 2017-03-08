@@ -1,12 +1,5 @@
 {% extends 'base.html' %}
 {% block title %}用户登陆{% endblock %}
-{% block script %}
-<script src="//cdn.bootcss.com/crypto-js/3.1.2/rollups/sha1.js"></script>
-{% if config['DEBUG'] %}
-    <script src="//cdn.bootcss.com/vue/2.1.10/vue.js"></script>
-{% else %}
-    <script src="//cdn.bootcss.com/vue/2.1.10/vue.min.js"></script>
-{% endif %}
 <script type="text/javascript">
     function validateEmail(email) {
         var re = /^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$/;
@@ -58,7 +51,7 @@
                             error(err);
                             return;
                         }
-                        alert('请在一小时内登陆您的email进行后续操作');
+                        UIkit.modal.alert("请在一小时内登陆您的email进行后续操作!");
                         return;
                     });
                 }

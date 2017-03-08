@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %} 后台管理 {% endblock %}
+{% block script %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}
+{% block content %}
+    <!-- sidebar -->
+    <div class="uk-width-medium-1-5">
+        <div class="uk-panel uk-panel-box">
+            <h3 class="uk-panel-title"><i class="uk-icon-download"></i> 后台管理</h3>
+            <ul class="uk-nav uk-nav-side">
+                <li class="uk-active"><a href=""><i class="uk-icon-users"></i> 用户管理</a></li>
+                <li><a href=""><i class="uk-icon-pencil"></i> 访问记录</a></li>
+            </ul>
+        </div>
+    </div>
+    <!-- end sidebar -->
+
+    <div class="uk-width-medium-4-5 uk-row-first">
+        <div id="error" class="uk-width-1-1"></div>
+        <div id="loading" class="uk-width-1-1 uk-text-center uk-margin-bottom uk-position-z-index">
+            <span><i class="uk-icon-spinner uk-icon-medium uk-icon-spin"></i> 正在加载...</span>
+        </div>
+        <div id="vm" class="uk-panel uk-panel-box uk-panel-box-primary uk-panel-header uk-overflow-container">
+            <h3 class="uk-panel-title">用户列表</h3>
+            <table class="uk-table uk-table-hover uk-table-striped">
+                <thead>
+                    <tr>
+                        <th class="uk-width-2-10">用户名</th>
+                        <th class="uk-width-4-10">email</th>
+                        <th class="uk-width-2-10">身份</th>
+                        <th class="uk-width-2-10">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="user in users">
+                        <td v-text="user.name"></td>
+                        <td v-text="user.email"></td>
+                        <td v-text="user.role_name"></td>
+                        <td>
+                            <div class="uk-button-group">
+                                <a v-on:click="show_edit(user)" class="uk-button uk-button-mini uk-button-primary" title="编辑" data-uk-modal="{target:'#edit'}"><i class="uk-icon-edit"></i></a>
+                                <a v-on:click="del_user(user)" class="uk-button uk-button-mini uk-button-primary" title="删除"><i class="uk-icon-trash-o"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <ul class="uk-pagination" data-uk-margin>
+            {% for i in range(1, page.page_all+1) %}
+                {% if page_cu == i %}
+                    <li class="uk-active"><span>{{ i }}</span></li>
+                {% else %}
+                    <li><a href="{{ url_for('index', dir_cu=args.dir_cu, page_cu=i) }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+
+            <!-- 模态对话框:编辑用户身份 -->
+            <div id="edit" class="uk-modal">
+                <div class="uk-modal-dialog">
+                    <a class="uk-modal-close uk-close"></a>
+                    <div class="uk-modal-header">编辑用户身份</div>
+                    <form class="uk-form">
+                        <label>把用户身份设为:</label>
+                        <select v-model="role_cu">
+                            <option v-for="role in roles" v-text="role.name"></option>
+                        </select>
+                    </form>
+                    <div class="uk-modal-footer uk-text-right">
+                        <a class="uk-button uk-modal-close">取消</a>
+                        <a v-on:click="edit_user" class="uk-button uk-button-primary uk-modal-close">确定</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

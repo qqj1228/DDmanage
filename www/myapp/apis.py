@@ -8,14 +8,14 @@ from email.header import Header
 from email.mime.text import MIMEText
 from email.utils import formataddr, parseaddr
 
-from flask import flash, jsonify, request, current_app, url_for
+from flask import flash, jsonify, request, current_app, url_for, send_from_directory
 from flask_login import login_required, login_user, current_user
 
 from . import app, db
 from .APIError import (APIPermissionError, APIResourceNotFoundError,
                        APIValueError)
-from .models import User
-from .tools import secure_filename
+from .models import User, Permission, Role
+from .tools import secure_filename, permission_required, admin_required
 
 logging.basicConfig(level=logging.INFO)
 
@@ -103,6 +103,7 @@ def api_forgot_password():
 
 @app.route('/api/upload', methods=['POST'])
 @login_required
+@permission_required(Permission.FILE_UPDOWN)
 def api_upload():
     file = request.files['file']
     if file is None:
@@ -127,6 +128,7 @@ def todir(filename):
 
 @app.route('/api/archive', methods=['POST'])
 @login_required
+@permission_required(Permission.DWG_UPDOWN)
 def api_archive():
     file = request.files['file']
     if file is None:
@@ -137,3 +139,61 @@ def api_archive():
         os.mkdir(path)
     file.save(os.path.join(path, filename))
     return jsonify({'done': True})
+
+
+@app.route('/api/download_arc', methods=['POST'])
+@login_required
+@permission_required(Permission.DWG_UPDOWN)
+def api_download_arc():
+    dir = request.json['dir']
+    filenamelist = request.json['filename']
+    for filename in filenamelist:
+        return send_from_directory(os.path.join(current_app.config['DWG_DIR'], dir), filename, as_attachment=True)
+    # return jsonify({'done': True})
+
+
+@app.route('/api/users')
+@login_required
+@admin_required
+def api_users():
+    users = User.query.all()
+    return jsonify({'users': [user.to_json() for user in users]})
+
+
+@app.route('/api/roles')
+@login_required
+@admin_required
+def api_roles():
+    roles = Role.query.all()
+    return jsonify({'roles': [role.to_json() for role in roles]})
+
+
+@app.route('/api/del_user', methods=['POST'])
+@login_required
+@admin_required
+def api_del_user():
+    email = request.json['email']
+    u = User.query.filter_by(email=email).first()
+    if u is None:
+        raise APIResourceNotFoundError('email', '没有此email对应的用户')
+    db.session.delete(u)
+    db.session.commit()
+    return jsonify({'name': u.name})
+
+
+@app.route('/api/edit_user', methods=['POST'])
+@login_required
+@admin_required
+def api_edit_user():
+    email = request.json['email']
+    role_name = request.json['role_name']
+    u = User.query.filter_by(email=email).first()
+    if u is None:
+        raise APIResourceNotFoundError('email', '没有此email对应的用户!')
+    r = Role.query.filter_by(name=role_name).first()
+    if r is None:
+        raise APIResourceNotFoundError('role_name', '没有此身份!')
+    u.role_r = r
+    db.session.add(u)
+    db.session.commit()
+    return jsonify({'name': u.name})

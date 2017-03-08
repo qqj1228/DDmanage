@@ -6,13 +6,14 @@
     <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
     <link rel="stylesheet" href="//cdn.bootcss.com/uikit/2.25.0/css/components/progress.gradient.min.css">
     <script>
-    // $(function () {
-    //     var pos = $("#picker").offset();
-    //     pos.left = pos.left + $("#picker").width() + 10;
-    //     $("#ctlBtn").offset(pos);
-    //     pos.left = pos.left + $("#ctlBtn").outerWidth() + 10;
-    //     $("#archive").offset(pos);
-    // });
+    $(function () {
+        // var pos = $("#picker").offset();
+        // pos.left = pos.left + $("#picker").width() + 10;
+        // $("#ctlBtn").offset(pos);
+        // pos.left = pos.left + $("#ctlBtn").outerWidth() + 10;
+        // $("#archive").offset(pos);
+        $('ul.uk-nav>li')
+    });
     </script>
 {% endblock %}
 {% block content %}
@@ -22,8 +23,8 @@
         <div class="uk-panel uk-panel-box">
             <h3 class="uk-panel-title"><i class="uk-icon-download"></i> 图纸下载</h3>
             <ul class="uk-nav uk-nav-side">
-                <li><a href=""><i class="uk-icon-user"></i> 个人图纸</a></li>
-                <li class="uk-active"><a href=""><i class="uk-icon-users"></i> 存档图纸</a></li>
+                <li class="uk-active"><a href=""><i class="uk-icon-user"></i> 个人图纸</a></li>
+                <li><a href=""><i class="uk-icon-users"></i> 存档图纸</a></li>
             </ul>
         </div>
     </div>
