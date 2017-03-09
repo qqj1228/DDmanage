@@ -9,7 +9,7 @@ from email.mime.text import MIMEText
 from email.utils import formataddr, parseaddr
 import zipfile
 
-from flask import flash, jsonify, request, current_app, url_for, make_response, send_from_directory
+from flask import flash, jsonify, request, current_app, url_for
 from flask_login import login_required, login_user, current_user
 
 from . import app, db
@@ -142,18 +142,21 @@ def api_archive():
     return jsonify({'done': True})
 
 
-@app.route('/api/download_bat', methods=['POST'])
+@app.route('/api/download', methods=['POST'])
 @login_required
 @permission_required(Permission.DWG_UPDOWN)
-def api_download_bat():
+def api_download():
     dir = request.json['dir']
     filenamelist = request.json['filename']
-    zfname = os.path.join(current_app.config['TMP_DIR'], request.remote_addr.replace('.', '-') + '.zip')
-    zf = zipfile.ZipFile(os.path.join('myapp/static/', zfname), 'w', zipfile.ZIP_DEFLATED, False)
-    for filename in filenamelist:
-        zf.write(os.path.join(current_app.config['DWG_DIR'], dir, filename), filename)
-    zf.close()
-    return jsonify({'url': url_for('static', filename=zfname)})
+    if len(filenamelist) > 1:
+        zfname = os.path.join(current_app.config['TMP_DIR'], request.remote_addr.replace('.', '-') + '.zip')
+        zf = zipfile.ZipFile(os.path.join('myapp/static/', zfname), 'w', zipfile.ZIP_DEFLATED, False)
+        for filename in filenamelist:
+            zf.write(os.path.join(current_app.config['DWG_DIR'], dir, filename), filename)
+        zf.close()
+        return jsonify({'url': url_for('static', filename=zfname)})
+    else:
+        return jsonify({'url': url_for('download_file', dir=dir, filename=filenamelist[0])})
 
 
 @app.route('/api/delete', methods=['POST'])
@@ -211,4 +214,9 @@ def api_edit_user():
     u.role_r = r
     db.session.add(u)
     db.session.commit()
+    if (r.permission | Permission.DEFAULT) != Permission.DEFAULT:
+        dir = str(u.id) + '-' + u.name
+        path = os.path.join(current_app.config['UPLOAD_FOLDER'], dir)
+        if not os.path.isdir(path):
+            os.mkdir(path)
     return jsonify({'name': u.name})

@@ -314,13 +314,13 @@ function _httpJSON(method, url, data, callback) {
         opt.data = JSON.stringify(data || {});
         opt.contentType = 'application/json';
     }
-    $.ajax(opt).done(function (r) {
+    $.ajax(opt).done(function (r, textStatus, jqXHR) {
         if (r && r.error) {
             return callback(r);
         }
         return callback(null, r);
-    }).fail(function (jqXHR, textStatus) {
-        return callback({'message': '网络好像出问题了', 'code': '' + jqXHR.status});
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        return callback({'error': errorThrown, 'message': '', 'code': '' + jqXHR.status});
     });
 }
 
@@ -500,7 +500,7 @@ function _display_error($obj, err) {
     if ($obj.is(':visible')) {
         $obj.hide();
     }
-    var msg = err.message || String(err);
+    var msg = err.message || err.error;
     var L = ['<div class="uk-alert uk-alert-danger">'];
     L.push('<p>Message: ');
     L.push(msg);

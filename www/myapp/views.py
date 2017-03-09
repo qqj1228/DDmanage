@@ -127,10 +127,11 @@ def showpdf(dir, filename):
     return render_template('showpdf.html', args=args)
 
 
-@app.route('/tmp/<filename>')
+@app.route('/download/<dir>/<filename>')
 @login_required
-def tmp_file(filename):
-    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename=filename)
+def download_file(dir, filename):
+    path = os.path.join(current_app.config['DWG_DIR'], dir)
+    return send_from_directory(path, filename=filename, as_attachment=True)
 
 
 @app.route('/about')
