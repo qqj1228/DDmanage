@@ -7,8 +7,9 @@ import smtplib
 from email.header import Header
 from email.mime.text import MIMEText
 from email.utils import formataddr, parseaddr
+import zipfile
 
-from flask import flash, jsonify, request, current_app, url_for, send_from_directory
+from flask import flash, jsonify, request, current_app, url_for, make_response, send_from_directory
 from flask_login import login_required, login_user, current_user
 
 from . import app, db
@@ -141,15 +142,29 @@ def api_archive():
     return jsonify({'done': True})
 
 
-@app.route('/api/download_arc', methods=['POST'])
+@app.route('/api/download_bat', methods=['POST'])
 @login_required
 @permission_required(Permission.DWG_UPDOWN)
-def api_download_arc():
+def api_download_bat():
+    dir = request.json['dir']
+    filenamelist = request.json['filename']
+    zfname = os.path.join(current_app.config['TMP_DIR'], request.remote_addr.replace('.', '-') + '.zip')
+    zf = zipfile.ZipFile(os.path.join('myapp/static/', zfname), 'w', zipfile.ZIP_DEFLATED, False)
+    for filename in filenamelist:
+        zf.write(os.path.join(current_app.config['DWG_DIR'], dir, filename), filename)
+    zf.close()
+    return jsonify({'url': url_for('static', filename=zfname)})
+
+
+@app.route('/api/delete', methods=['POST'])
+@login_required
+@permission_required(Permission.DWG_UPDOWN)
+def api_delete():
     dir = request.json['dir']
     filenamelist = request.json['filename']
     for filename in filenamelist:
-        return send_from_directory(os.path.join(current_app.config['DWG_DIR'], dir), filename, as_attachment=True)
-    # return jsonify({'done': True})
+        os.remove(os.path.join(current_app.config['DWG_DIR'], dir, filename))
+    return jsonify({'done': True})
 
 
 @app.route('/api/users')

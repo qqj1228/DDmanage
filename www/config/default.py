@@ -10,7 +10,7 @@ WEB_NAME = '图纸管理程序'
 APP_NAME = 'DDmanage'
 # 网站logo图片地址填写相对于static的相对路径
 WEB_LOGO = 'img/logo.svg'
-# 每页显示多少个文件，大于100就会感到明显延时
+# 每页显示多少个文件
 RANGE = 100
 
 # 上传文件存放地址

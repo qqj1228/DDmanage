@@ -320,7 +320,7 @@ function _httpJSON(method, url, data, callback) {
         }
         return callback(null, r);
     }).fail(function (jqXHR, textStatus) {
-        return callback({'error': 'http_bad_response', 'data': '' + jqXHR.status, 'message': '网络好像出问题了 (HTTP ' + jqXHR.status + ')'});
+        return callback({'message': '网络好像出问题了', 'code': '' + jqXHR.status});
     });
 }
 
@@ -502,10 +502,10 @@ function _display_error($obj, err) {
     }
     var msg = err.message || String(err);
     var L = ['<div class="uk-alert uk-alert-danger">'];
-    L.push('<p>Error: ');
+    L.push('<p>Message: ');
     L.push(msg);
     L.push('</p><p>Code: ');
-    L.push(err.error || '500');
+    L.push(err.code || '500');
     L.push('</p></div>');
     $obj.html(L.join('')).slideDown();
 }

@@ -3,6 +3,8 @@
 import os
 import re
 import functools
+import zipfile
+from io import BytesIO
 
 from flask import abort
 from flask_login import current_user
@@ -42,3 +44,51 @@ def permission_required(permission):
 
 def admin_required(func):
     return permission_required(Permission.ADMIN)(func)
+
+
+class InMemoryZip(object):
+
+    def __init__(self):
+        # Create the in-memory file-like object
+        self.in_memory_zip = BytesIO()
+
+    def appendFile(self, filepath):
+        '''
+        从本地磁盘读取文件，并将其添加到压缩文件中
+        file_path 为包括文件名和文件路径的完整文件名
+        '''
+        p, fn = os.path.split(filepath)
+        with open(filepath, "rb") as f:
+            c = f.read()
+            self.append(fn, c)
+        return self
+
+    def append(self, filename_in_zip, file_contents):
+        '''
+        Appends a file with name filename_in_zip and contents of
+        file_contents to the in-memory zip.
+        '''
+        # Get a handle to the in-memory zip in append mode
+        zf = zipfile.ZipFile(self.in_memory_zip, "a", zipfile.ZIP_DEFLATED, False)
+        # Write the file to the in-memory zip
+        zf.writestr(filename_in_zip, file_contents)
+        # Mark the files as having been created on Windows so that
+        # Unix permissions are not inferred as 0000
+        for zfile in zf.filelist:
+            zfile.create_system = 0
+        return self
+
+    def read(self):
+        '''
+        Returns a string with the contents of the in-memory zip.
+        '''
+        self.in_memory_zip.seek(0)
+        return self.in_memory_zip.read()
+
+    def writetofile(self, filepath):
+        '''
+        Writes the in-memory zip to a file.
+        filepath 为包括文件名和文件路径的完整文件名
+        '''
+        with open(filepath, "wb") as f:
+            f.write(self.read())
