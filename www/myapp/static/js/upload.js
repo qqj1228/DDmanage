@@ -51,12 +51,16 @@ $(function() {
         $percent.css( 'width', percentage * 100 + '%' );
     });
 
-    uploader.on( 'uploadSuccess', function( file ) {
-        $( '#'+file.id ).find('span.state').text('上传完毕').removeClass("uk-badge-warning").addClass("uk-badge-success");
+    uploader.on( 'uploadSuccess', function( file, response ) {
+        if (response.message){
+            $( '#'+file.id ).find('span.state').text('上传出错: ' + response.message).removeClass("uk-badge-warning").addClass("uk-badge-danger");
+        }else{
+            $( '#'+file.id ).find('span.state').text('上传完毕').removeClass("uk-badge-warning").addClass("uk-badge-success");
+        }
     });
 
     uploader.on( 'uploadError', function( file ) {
-        $( '#'+file.id ).find('span.state').text('上传出错').removeClass("uk-badge-warning").addClass("uk-badge-danger");
+        $( '#'+file.id ).find('span.state').text('网络出错').removeClass("uk-badge-warning").addClass("uk-badge-danger");
     });
 
     uploader.on( 'uploadComplete', function( file ) {
@@ -77,7 +81,7 @@ $(function() {
             $arc.text('暂停入库');
         } else {
             $btn.text('开始上传');
-            $arc.text('开始入库');
+            $arc.text('图纸入库');
         }
     });
 

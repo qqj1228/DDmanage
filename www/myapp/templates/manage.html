@@ -1,38 +1,111 @@
 {% extends 'base.html' %}
-{% block title %} 图纸管理 {% endblock %}
+{% block title %} 文件管理 {% endblock %}
 {% block script %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/webuploader.css') }}">
-    <script src="//cdn.staticfile.org/webuploader/0.1.5/webuploader.min.js"></script>
-    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
-    <link rel="stylesheet" href="//cdn.bootcss.com/uikit/2.25.0/css/components/progress.gradient.min.css">
-    <script>
-    $(function () {
-        // var pos = $("#picker").offset();
-        // pos.left = pos.left + $("#picker").width() + 10;
-        // $("#ctlBtn").offset(pos);
-        // pos.left = pos.left + $("#ctlBtn").outerWidth() + 10;
-        // $("#archive").offset(pos);
-        $('ul.uk-nav>li')
+<link rel="stylesheet" href="{{ url_for('static', filename='css/webuploader.css') }}">
+<script src="//cdn.staticfile.org/webuploader/0.1.5/webuploader.min.js"></script>
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+<link rel="stylesheet" href="//cdn.bootcss.com/uikit/2.25.0/css/components/progress.gradient.min.css">
+<script>
+    function bat_checkbox(dir, url_ajax, url_ret, personal){
+        // 因表头的checkbox无next元素，故返回的元素没有包含表头
+        var filelinks = $('input[name="subcheck"]:checked').parent().next();
+        var filelist = [];
+        for (var i=0; i<filelinks.length; i++){
+            filelist.push($(filelinks[i]).text());
+        }
+        if(filelist.length > 0){
+            postJSON(url_ajax, {
+                dir: dir,
+                filename: filelist,
+                personal: personal
+                }, function(err, r){
+                if (err) {
+                    if(err.code == "403"){
+                        err.message = "您没有权限访问该页面/资源!"
+                    }
+                    error(err);
+                    return;
+                }
+                if(url_ret === ''){
+                    location.assign(r.url);
+                }else{
+                    location.assign(url_ret);
+                }
+            });
+        }
+    }
+
+    $(function(){
+        // 全选checkbox响应
+        $('#check_all').click(function(e){
+            $('input[name="subcheck"]').prop('checked', this.checked);
+        });
+        // 单个checkbox响应
+        var $subcheck = $('input[name="subcheck"]');
+        $subcheck.click(function(e){
+            $('#check_all').prop('checked', $subcheck.length == $('input[name="subcheck"]:checked').length);
+        });
+        // 批量下载按钮响应
+        $('#down_bat').click(function(e){
+            bat_checkbox("{{ args.dir }}", "{{ url_for('api_download') }}", '', true);
+        });
+        // 批量删除按钮响应
+        $('#del_bat').click(function(e){
+            UIkit.modal.confirm("确定要删除选中的文件吗?删除后不可恢复!", function(){
+                bat_checkbox("{{ args.dir }}", "{{ url_for('api_delete') }}", location.pathname, true);
+            });
+        });
+        // 单个下载按钮响应
+        $('a[name="subdown"]').click(function(){
+            var filename = $(this).parent().parent().prev().prev().text();
+            postJSON("{{ url_for('api_download') }}", {
+                dir: "{{ args.dir }}",
+                filename: [filename],
+                personal: true
+                }, function(err, r){
+                if (err) {
+                    if(err.code == "403"){
+                        err.message = "您没有权限访问该页面/资源!"
+                    }
+                    error(err);
+                    return;
+                }
+                location.assign(r.url);
+            });
+        });
+        // 单个删除按钮响应
+        $('a[name="subdel"]').click(function(){
+            var filename = $(this).parent().parent().prev().prev().text();
+            UIkit.modal.confirm("确定要删除文件: " + filename + " 吗?删除后不可恢复!", function(){
+                postJSON("{{ url_for('api_delete') }}", {
+                    dir: "{{ args.dir }}",
+                    filename: [filename],
+                    personal: true
+                    }, function(err, r){
+                    if (err) {
+                        if(err.code == "403"){
+                            err.message = "您没有权限访问该页面/资源!"
+                        }
+                        error(err);
+                        return;
+                    }
+                    location.assign(location.pathname);
+                });
+            });
+        });
     });
-    </script>
+</script>
 {% endblock %}
 {% block content %}
     <!-- sidebar -->
     <div class="uk-width-medium-1-5">
         {% include 'sidebar.html' %}
-        <div class="uk-panel uk-panel-box">
-            <h3 class="uk-panel-title"><i class="uk-icon-download"></i> 图纸下载</h3>
-            <ul class="uk-nav uk-nav-side">
-                <li class="uk-active"><a href=""><i class="uk-icon-user"></i> 个人图纸</a></li>
-                <li><a href=""><i class="uk-icon-users"></i> 存档图纸</a></li>
-            </ul>
-        </div>
     </div>
     <!-- end sidebar -->
 
     <div class="uk-width-medium-4-5 uk-row-first">
         <div id="uploader" class="uk-panel uk-panel-box uk-panel-box-primary uk-panel-header">
-            <h3 class="uk-panel-title"><i class="uk-icon-upload"></i> 图纸上传</h3>
+            <h3 class="uk-panel-title"><i class="uk-icon-upload"></i> 文件上传</h3>
             <!--用来存放文件信息-->
             <div id="thelist" class=""></div>
             <div class="btns">
@@ -40,12 +113,51 @@
                 <a id="picker" class="uk-button uk-button-primary">选择文件</a>
                 <button id="ctlBtn" class="uk-button uk-button-success">开始上传</button>
                 {% if current_user.can(Permission.DWG_UPDOWN) %}
-                <button id="archive" class="uk-button uk-button-danger">开始入库</button>
+                <button id="archive" class="uk-button uk-button-danger">图纸入库</button>
                 {% endif %}
             </div>
         </div>
         <div id="uploader" class="uk-panel uk-panel-box uk-panel-box-primary uk-panel-header">
-            <h3 class="uk-panel-title"><i class="uk-icon-download"></i> 图纸下载</h3>
+            <h3 class="uk-panel-title"><i class="uk-icon-user"></i> 个人文件</h3>
+            <table class="uk-table uk-table-hover uk-table-striped uk-table-condensed">
+                <thead>
+                    <tr>
+                        <th class="uk-width-1-10 uk-text-center"><label><input id="check_all" type="checkbox">全选</label></th>
+                        <th class="uk-width-4-10 uk-text-center">文件名</th>
+                        <th class="uk-width-3-10 uk-text-center">所有者</th>
+                        <th class="uk-width-2-10 uk-text-center">批量
+                            <div class="uk-button-group">
+                                <a id="down_bat" class="uk-button uk-button-mini uk-button-primary" title="选中文件下载"><i class="uk-icon-download"></i></a>
+                                <a id="del_bat" class="uk-button uk-button-mini uk-button-danger" title="选中文件删除"><i class="uk-icon-trash-o"></i></a>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in args.filelist[args.page.page_start:args.page.page_start+args.page.range] %}
+                    <tr class="uk-text-center">
+                        <td><input name="subcheck" type="checkbox"></td>
+                        <td>{{ file }}</td>
+                        <td>{{ current_user.name }}</td>
+                        <td>
+                            <div class="uk-button-group">
+                                <a name="subdown" class="uk-button uk-button-mini uk-button-primary" title="下载"><i class="uk-icon-download"></i></a>
+                                <a name="subdel" class="uk-button uk-button-mini uk-button-danger" title="删除"><i class="uk-icon-trash-o"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+        <ul class="uk-pagination" data-uk-margin>
+        {% for i in range(1, args.page.page_all+1) %}
+            {% if args.page_cu == i %}
+                <li class="uk-active"><span>{{ i }}</span></li>
+            {% else %}
+                <li><a href="{{ url_for('manage', page_cu=i) }}">{{ i }}</a></li>
+            {% endif %}
+        {% endfor %}
+        </ul>
     </div>
 {% endblock %}

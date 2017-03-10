@@ -6,7 +6,7 @@ import re
 import shutil
 
 from flask import flash, redirect, render_template, request, url_for, send_from_directory, current_app
-from flask_login import login_required, logout_user
+from flask_login import login_required, logout_user, current_user
 
 from . import app
 from .models import User, Permission
@@ -127,11 +127,15 @@ def showpdf(dir, filename):
     return render_template('showpdf.html', args=args)
 
 
-@app.route('/download/<dir>/<filename>')
+@app.route('/download/<dir>/<filename>/<personal>')
 @login_required
-def download_file(dir, filename):
-    path = os.path.join(current_app.config['DWG_DIR'], dir)
-    return send_from_directory(path, filename=filename, as_attachment=True)
+@permission_required(Permission.FILE_UPDOWN)
+def download_file(dir, filename, personal):
+    if personal == 'personal':
+        path_abs = os.path.join(current_app.config['UPLOAD_FOLDER'], dir)
+    else:
+        path_abs = os.path.join(current_app.config['DWG_DIR'], dir)
+    return send_from_directory(path_abs, filename=filename, as_attachment=True)
 
 
 @app.route('/about')
@@ -158,10 +162,19 @@ def logout():
 
 
 @app.route('/manage')
+@app.route('/manage/<int:page_cu>')
 @login_required
 @permission_required(Permission.DWG_BROWSE)
-def manage():
-    return render_template('manage.html')
+def manage(page_cu=1):
+    dir = str(current_user.id) + '-' + current_user.name
+    filelist = getfile(os.path.join(current_app.config['UPLOAD_FOLDER'], dir))
+    page = getpage(filelist, page_cu)
+    args = dict()
+    args['filelist'] = filelist
+    args['dir'] = dir
+    args['page_cu'] = page_cu
+    args['page'] = page
+    return render_template('manage.html', args=args)
 
 
 @app.route('/user')

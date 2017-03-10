@@ -133,11 +133,13 @@ def todir(filename):
 def api_archive():
     file = request.files['file']
     if file is None:
-        APIResourceNotFoundError('file', '未接收到上传的文件！')
+        raise APIResourceNotFoundError('file', '未接收到上传的文件！')
     filename = secure_filename(file.filename)
     path = os.path.join(current_app.config['DWG_DIR'], todir(filename))
     if not os.path.isdir(path):
         os.mkdir(path)
+    if os.path.isfile(os.path.join(path, filename)):
+        raise APIValueError('file', '存档内有同名文件!')
     file.save(os.path.join(path, filename))
     return jsonify({'done': True})
 
@@ -148,15 +150,22 @@ def api_archive():
 def api_download():
     dir = request.json['dir']
     filenamelist = request.json['filename']
+    personal = request.json['personal']
+    if personal:
+        path_abs = current_app.config['UPLOAD_FOLDER']
+        per_str = 'personal'
+    else:
+        path_abs = current_app.config['DWG_DIR']
+        per_str = 'dwg'
     if len(filenamelist) > 1:
         zfname = os.path.join(current_app.config['TMP_DIR'], request.remote_addr.replace('.', '-') + '.zip')
         zf = zipfile.ZipFile(os.path.join('myapp/static/', zfname), 'w', zipfile.ZIP_DEFLATED, False)
         for filename in filenamelist:
-            zf.write(os.path.join(current_app.config['DWG_DIR'], dir, filename), filename)
+            zf.write(os.path.join(path_abs, dir, filename), filename)
         zf.close()
         return jsonify({'url': url_for('static', filename=zfname)})
     else:
-        return jsonify({'url': url_for('download_file', dir=dir, filename=filenamelist[0])})
+        return jsonify({'url': url_for('download_file', dir=dir, filename=filenamelist[0], personal=per_str)})
 
 
 @app.route('/api/delete', methods=['POST'])
@@ -165,8 +174,13 @@ def api_download():
 def api_delete():
     dir = request.json['dir']
     filenamelist = request.json['filename']
+    personal = request.json['personal']
+    if personal:
+        path_abs = current_app.config['UPLOAD_FOLDER']
+    else:
+        path_abs = current_app.config['DWG_DIR']
     for filename in filenamelist:
-        os.remove(os.path.join(current_app.config['DWG_DIR'], dir, filename))
+        os.remove(os.path.join(path_abs, dir, filename))
     return jsonify({'done': True})
 
 

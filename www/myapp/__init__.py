@@ -18,6 +18,7 @@ class MyFlask(Flask):
 
 
 app = MyFlask(__name__)
+# app = Flask(__name__)
 
 app.config.from_object('config.default')
 app.config.from_object('config.user')

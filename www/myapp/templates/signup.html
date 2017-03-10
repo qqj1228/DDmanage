@@ -53,7 +53,7 @@
 {% block content %}
 <div class="uk-width-medium-1-2 uk-container-center">
     <div class="uk-panel uk-margin-bottom uk-text-center">
-        <img class="uk-border-circle" width="120" height="120" src="{{ url_for('static', filename=config['WEB_LOGO']) }}" alt="">
+        <img width="120" height="120" src="{{ url_for('static', filename=config['WEB_LOGO']) }}" alt="">
     </div>
     <form id="vm" v-on:submit="submit" class="uk-panel uk-panel-box uk-panel-header uk-form uk-form-stacked">
         <h3 class="uk-panel-title">请填写注册信息</h3>

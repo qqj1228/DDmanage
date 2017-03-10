@@ -1,18 +1,19 @@
 {% extends 'base.html' %}
-{% block title %} 首页 {% endblock %}
+{% block title %} 图纸管理 {% endblock %}
 {% block script %}
 <script>
-    function bat_checkbox(dir, url_ajax, url_ret=''){
+    function bat_checkbox(dir, url_ajax, url_ret, personal){
         // 因表头的checkbox无next元素，故返回的元素没有包含表头
         var filelinks = $('input[name="subcheck"]:checked').parent().next().find('a');
         var filelist = [];
         for (var i=0; i<filelinks.length; i++){
-            filelist.push(filelinks[i].text);
+            filelist.push($(filelinks[i]).text());
         }
         if(filelist.length > 0){
             postJSON(url_ajax, {
                 dir: dir,
-                filename: filelist
+                filename: filelist,
+                personal: personal
                 }, function(err, r){
                 if (err) {
                     if(err.code == "403"){
@@ -42,12 +43,12 @@
         });
         // 批量下载按钮响应
         $('#down_bat').click(function(e){
-            bat_checkbox("{{ args.dir_cu }}", "{{ url_for('api_download') }}");
+            bat_checkbox("{{ args.dir_cu }}", "{{ url_for('api_download') }}", '', false);
         });
         // 批量删除按钮响应
         $('#del_bat').click(function(e){
             UIkit.modal.confirm("确定要删除选中的文件吗?删除后不可恢复!", function(){
-                bat_checkbox("{{ args.dir_cu }}", "{{ url_for('api_delete') }}", location.pathname);
+                bat_checkbox("{{ args.dir_cu }}", "{{ url_for('api_delete') }}", location.pathname, false);
             });
         });
         // 单个下载按钮响应
@@ -55,7 +56,8 @@
             var filename = $(this).parent().parent().prev().prev().find('a').text();
             postJSON("{{ url_for('api_download') }}", {
                 dir: "{{ args.dir_cu }}",
-                filename: [filename]
+                filename: [filename],
+                personal: false
                 }, function(err, r){
                 if (err) {
                     if(err.code == "403"){
@@ -73,7 +75,8 @@
             UIkit.modal.confirm("确定要删除文件: " + filename + " 吗?删除后不可恢复!", function(){
                 postJSON("{{ url_for('api_delete') }}", {
                     dir: "{{ args.dir_cu }}",
-                    filename: [filename]
+                    filename: [filename],
+                    personal: false
                     }, function(err, r){
                     if (err) {
                         if(err.code == "403"){
