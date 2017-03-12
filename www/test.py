@@ -17,10 +17,6 @@ class TestCase(unittest.TestCase):
     def tearDown(self):
         models.db.session.remove()
 
-    def test_index(self):
-        response = self.client.get('/')
-        self.assertIn('当前目录', response.get_data(as_text=True))
-
     def test_password_setter(self):
         with app.app_context():
             u = models.User(password='cash')
@@ -63,12 +59,20 @@ class TestCase(unittest.TestCase):
         self.assertEqual('HRCS', apis.todir('HRCS95.41-00'))
         self.assertEqual('HRCS', apis.todir('HT.RSCS2.41-00'))
         self.assertEqual('HT.0', apis.todir('HT.0M20.41-00'))
-        self.assertEqual('HT.a', apis.todir('HT.aM20.41-00'))
+        self.assertEqual('HT.A', apis.todir('HT.aM20.41-00'))
         self.assertEqual('HT.A', apis.todir('HT.AM20.41-00'))
         self.assertEqual('H', apis.todir('HM20.41-00'))
         self.assertEqual('4', apis.todir('4M20.41-00'))
-        self.assertEqual('S', apis.todir('S6M20.41-00'))
+        self.assertEqual('S', apis.todir('s6M20.41-00'))
         self.assertEqual('我', apis.todir('我的文件'))
+
+    def test_dwgrecord(self):
+        with app.app_context():
+            u = models.User(password='cash')
+            dwg = models.DwgRecord(user_r=u, dwg='1/123.dwg', url='/test')
+            self.assertEqual('1/123.dwg', dwg.dwg)
+            self.assertEqual('/test', dwg.url)
+            self.assertEqual(u.id, dwg.user_r.id)
 
 
 if __name__ == '__main__':

@@ -1,5 +1,7 @@
 # coding:utf-8
 
+from datetime import datetime
+
 from flask import current_app
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -20,6 +22,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(64), nullable=False, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
+    dwgrecords = db.relationship('DwgRecord', backref='user_r', lazy='dynamic')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -115,3 +118,27 @@ class Role(db.Model):
 
     def __repr__(self):
         return 'Role-%r' % self.name
+
+
+class DwgRecord(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    dwg = db.Column(db.String(128), nullable=False)
+    url = db.Column(db.String(128), nullable=False)
+    datetime = db.Column(db.DateTime, nullable=False)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.datetime = datetime.now()
+
+    def to_json(self):
+        json_dwgrecord = {
+            'user': self.user_r.name,
+            'dwg': self.dwg,
+            'url': self.url,
+            'datetime': self.datetime
+        }
+        return json_dwgrecord
+
+    def __repr__(self):
+        return 'DwgRecord-%r' % self.dwg

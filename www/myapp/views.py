@@ -198,12 +198,19 @@ def forgot_password(email, token):
         return redirect(url_for('login'))
     return render_template('forgot_password.html', email=u.email)
 
-
 @app.route('/admin')
+@app.route('/admin/user')
 @login_required
 @admin_required
-def admin():
-    return render_template('admin.html')
+def admin_user():
+    return render_template('admin_user.html')
+
+
+@app.route('/admin/record')
+@login_required
+@admin_required
+def admin_record():
+    return render_template('admin_record.html')
 
 
 def findfile(start, name):

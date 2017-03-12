@@ -40,7 +40,7 @@
                             <ul class="uk-nav uk-nav-navbar">
                                 <li><a href="{{ url_for('user') }}"><i class="uk-icon-info-circle"></i> 用户信息</a></li>
                                 {% if current_user.is_admin() %}
-                                <li><a href="{{ url_for('admin') }}"><i class="uk-icon-gear"></i> 后台管理</a></li>
+                                <li><a href="{{ url_for('admin_user') }}"><i class="uk-icon-gear"></i> 后台管理</a></li>
                                 {% endif %}
                                 <li><a href="{{ url_for('logout') }}"><i class="uk-icon-sign-out"></i> 登出</a></li>
                             </ul>

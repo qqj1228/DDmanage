@@ -92,3 +92,15 @@ class InMemoryZip(object):
         '''
         with open(filepath, "wb") as f:
             f.write(self.read())
+
+
+def todir(filename):
+    if filename.startswith('HT.HRCS') or filename.startswith('HRCS') or filename.startswith('HT.RSCS'):
+        return 'HRCS'
+    if filename.startswith('HT'):
+        s = re.match(r'^(HT\.[\S])', filename, re.M | re.I)
+        return s.group(1).upper()
+    else:
+        s = re.match(r'^([\S])', filename, re.M | re.I)
+        return s.group(1).upper()
+    return filename[0]

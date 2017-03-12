@@ -15,8 +15,8 @@ from flask_login import login_required, login_user, current_user
 from . import app, db
 from .APIError import (APIPermissionError, APIResourceNotFoundError,
                        APIValueError)
-from .models import User, Permission, Role
-from .tools import secure_filename, permission_required, admin_required
+from .models import User, Permission, Role, DwgRecord
+from .tools import secure_filename, permission_required, admin_required, todir
 
 logging.basicConfig(level=logging.INFO)
 
@@ -115,18 +115,6 @@ def api_upload():
     return jsonify({'done': True})
 
 
-def todir(filename):
-    if filename.startswith('HT.HRCS') or filename.startswith('HRCS') or filename.startswith('HT.RSCS'):
-        return 'HRCS'
-    if filename.startswith('HT'):
-        s = re.match(r'^(HT\.[\S])', filename, re.M | re.I)
-        return s.group(1)
-    else:
-        s = re.match(r'^([\S])', filename, re.M | re.I)
-        return s.group(1)
-    return filename[0]
-
-
 @app.route('/api/archive', methods=['POST'])
 @login_required
 @permission_required(Permission.DWG_UPDOWN)
@@ -162,8 +150,19 @@ def api_download():
         for file in filelist:
             zf.write(os.path.join(path_abs, file[1], file[0]), file[0])
         zf.close()
+        # 操作记录
+        for file in filelist:
+            dwg = os.path.join(file[1], file[0])
+            dr = DwgRecord(user_r=current_user, dwg=dwg, url=url_for('api_download'))
+            db.session.add(dr)
+            db.session.commit()
         return jsonify({'url': url_for('static', filename=zfname)})
     else:
+        # 操作记录
+        dwg = os.path.join(filelist[0][1], filelist[0][0])
+        dr = DwgRecord(user_r=current_user, dwg=dwg, url=url_for('api_download'))
+        db.session.add(dr)
+        db.session.commit()
         return jsonify({'url': url_for('download_file', dir=filelist[0][1], filename=filelist[0][0], personal=per_str)})
 
 
@@ -179,6 +178,11 @@ def api_delete():
         path_abs = current_app.config['DWG_DIR']
     for file in filelist:
         os.remove(os.path.join(path_abs, file[1], file[0]))
+        # 操作记录
+        dwg = os.path.join(file[1], file[0])
+        dr = DwgRecord(user_r=current_user, dwg=dwg, url=url_for('api_delete'))
+        db.session.add(dr)
+        db.session.commit()
     return jsonify({'done': True})
 
 
@@ -241,3 +245,11 @@ def api_search_url():
     text = request.json['text']
     text = secure_filename(text.strip())
     return jsonify({'url': url_for('search', text=text)})
+
+
+@app.route('/api/records')
+@login_required
+@admin_required
+def api_records():
+    records = DwgRecord.query.order_by(DwgRecord.datetime.desc()).all()
+    return jsonify({'records': [record.to_json() for record in records]})
