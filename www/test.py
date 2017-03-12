@@ -19,7 +19,7 @@ class TestCase(unittest.TestCase):
 
     def test_index(self):
         response = self.client.get('/')
-        self.assertIn('当前打开的目录', response.get_data(as_text=True))
+        self.assertIn('当前目录', response.get_data(as_text=True))
 
     def test_password_setter(self):
         with app.app_context():

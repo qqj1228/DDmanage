@@ -10,7 +10,7 @@ from flask_login import login_required, logout_user, current_user
 
 from . import app
 from .models import User, Permission
-from .tools import admin_required, permission_required
+from .tools import admin_required, permission_required, secure_filename
 
 logging.basicConfig(level=logging.INFO)
 DWG_DIR = app.config.get('DWG_DIR')
@@ -89,9 +89,10 @@ def index(dir_cu='', page_cu=1):
 @login_required
 @permission_required(Permission.DWG_BROWSE)
 def show(dir, filename):
+    raw = r'\.(pdf|jpg|jpeg|jpe|png|gif|ico|svg|tif|tiff|bmp|txt|rtf|doc|docx|xls|xlsx|ppt|pptx)$'
     if re.search(r'\.d[wx][gft]$', filename, re.M | re.I):
         return redirect(url_for('showdwg', dir=dir, filename=filename))
-    elif re.search(r'\.pdf$', filename, re.I):
+    elif re.search(raw, filename, re.M | re.I):
         return redirect(url_for('showpdf', dir=dir, filename=filename))
     else:
         flash('无法打开 "' + filename + '"，暂未支持该文件格式。')
@@ -117,7 +118,13 @@ def showdwg(dir, filename):
 @permission_required(Permission.DWG_BROWSE)
 def showpdf(dir, filename):
     source = os.path.join(DWG_DIR, dir, filename)
-    dest = os.path.join(TMP_DIR, request.remote_addr.replace('.', '-') + '.pdf')
+    addr_name = request.remote_addr.replace('.', '-')
+    name_ext = os.path.splitext(filename)
+    filelist = os.listdir(os.path.join(current_app.root_path, 'static/', TMP_DIR))
+    for file in filelist:
+        if file.startswith(addr_name):
+            os.remove(os.path.join(current_app.root_path, 'static/', TMP_DIR, file))
+    dest = os.path.join(TMP_DIR, addr_name + '_' + name_ext[0] + name_ext[1])
     shutil.copy(source, os.path.join('myapp/static/', dest))
     # return redirect(url_for('static', filename=dest))
     url = url_for('static', filename=dest)
@@ -197,3 +204,28 @@ def forgot_password(email, token):
 @admin_required
 def admin():
     return render_template('admin.html')
+
+
+def findfile(start, name):
+    filelist = []
+    for relpath, dirs, files in os.walk(start):
+        for file in files:
+            if file[0] != '.':    # 去掉以“.”开头的隐藏文件
+                name_ext = os.path.splitext(file)
+                if re.search(name, name_ext[0], re.M | re.I) is not None:
+                    path = relpath.lstrip(start)
+                    filelist.append((path, file))
+    return filelist
+
+
+@app.route('/search/<text>')
+@login_required
+@permission_required(Permission.DWG_BROWSE)
+def search(text):
+    dirlist = getdir()
+    args = dict()
+    args['dirlist'] = dirlist
+    args['dir_cu'] = ''
+    text = secure_filename(text.strip())
+    filelist = findfile(current_app.config['DWG_DIR'], text)
+    return render_template('search.html', text=text, filelist=filelist, args=args)

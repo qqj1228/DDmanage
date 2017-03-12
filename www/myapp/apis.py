@@ -148,8 +148,7 @@ def api_archive():
 @login_required
 @permission_required(Permission.DWG_UPDOWN)
 def api_download():
-    dir = request.json['dir']
-    filenamelist = request.json['filename']
+    filelist = request.json['filelist']
     personal = request.json['personal']
     if personal:
         path_abs = current_app.config['UPLOAD_FOLDER']
@@ -157,30 +156,29 @@ def api_download():
     else:
         path_abs = current_app.config['DWG_DIR']
         per_str = 'dwg'
-    if len(filenamelist) > 1:
+    if len(filelist) > 1:
         zfname = os.path.join(current_app.config['TMP_DIR'], request.remote_addr.replace('.', '-') + '.zip')
         zf = zipfile.ZipFile(os.path.join('myapp/static/', zfname), 'w', zipfile.ZIP_DEFLATED, False)
-        for filename in filenamelist:
-            zf.write(os.path.join(path_abs, dir, filename), filename)
+        for file in filelist:
+            zf.write(os.path.join(path_abs, file[1], file[0]), file[0])
         zf.close()
         return jsonify({'url': url_for('static', filename=zfname)})
     else:
-        return jsonify({'url': url_for('download_file', dir=dir, filename=filenamelist[0], personal=per_str)})
+        return jsonify({'url': url_for('download_file', dir=filelist[0][1], filename=filelist[0][0], personal=per_str)})
 
 
 @app.route('/api/delete', methods=['POST'])
 @login_required
 @permission_required(Permission.DWG_UPDOWN)
 def api_delete():
-    dir = request.json['dir']
-    filenamelist = request.json['filename']
+    filelist = request.json['filelist']
     personal = request.json['personal']
     if personal:
         path_abs = current_app.config['UPLOAD_FOLDER']
     else:
         path_abs = current_app.config['DWG_DIR']
-    for filename in filenamelist:
-        os.remove(os.path.join(path_abs, dir, filename))
+    for file in filelist:
+        os.remove(os.path.join(path_abs, file[1], file[0]))
     return jsonify({'done': True})
 
 
@@ -234,3 +232,12 @@ def api_edit_user():
         if not os.path.isdir(path):
             os.mkdir(path)
     return jsonify({'name': u.name})
+
+
+@app.route('/api/search_url', methods=['POST'])
+@login_required
+@permission_required(Permission.DWG_BROWSE)
+def api_search_url():
+    text = request.json['text']
+    text = secure_filename(text.strip())
+    return jsonify({'url': url_for('search', text=text)})

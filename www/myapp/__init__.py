@@ -7,18 +7,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 
 
-class MyFlask(Flask):
-    '''
-    在线打开PDF文件时，禁用缓存，避免不同文件请求显示的是同一个文件
-    '''
-    def get_send_file_max_age(self, name):
-        if name.lower().endswith('.pdf'):
-            return 0
-        return Flask.get_send_file_max_age(self, name)
-
-
-app = MyFlask(__name__)
-# app = Flask(__name__)
+app = Flask(__name__)
 
 app.config.from_object('config.default')
 app.config.from_object('config.user')
