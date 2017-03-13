@@ -2,7 +2,6 @@
 
 import logging
 import os
-import re
 import smtplib
 from email.header import Header
 from email.mime.text import MIMEText
