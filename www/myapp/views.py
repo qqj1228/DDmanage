@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import shutil
+from urllib.parse import quote
 
 from flask import flash, redirect, render_template, request, url_for, send_from_directory, current_app
 from flask_login import login_required, logout_user, current_user
@@ -134,15 +135,25 @@ def showpdf(dir, filename):
     return render_template('showpdf.html', args=args)
 
 
-@app.route('/download/<dir>/<filename>/<personal>')
+@app.route('/download/<path:dir>/<filename>/<personal>')
 @login_required
 @permission_required(Permission.FILE_UPDOWN)
 def download_file(dir, filename, personal):
     if personal == 'personal':
-        path_abs = os.path.join(current_app.config['UPLOAD_FOLDER'], dir)
+        dir_abs = os.path.join(current_app.config['UPLOAD_FOLDER'], dir)
     else:
-        path_abs = os.path.join(current_app.config['DWG_DIR'], dir)
-    return send_from_directory(path_abs, filename=filename, as_attachment=True)
+        dir_abs = os.path.join(current_app.config['DWG_DIR'], dir)
+    # 对文件名进行转码
+    fname_encoded = quote(filename)
+    options = dict()
+    options['conditional'] = True
+    options['as_attachment'] = True
+    options['attachment_filename'] = fname_encoded
+    rv = send_from_directory(dir_abs, filename, **options)
+    # 支持中文名称
+    if fname_encoded == filename:
+        rv.headers['Content-Disposition'] += "; filename*=utf-8''%s" % fname_encoded
+    return rv
 
 
 @app.route('/about')
@@ -197,6 +208,7 @@ def forgot_password(email, token):
         flash('验证失败或已过期！')
         return redirect(url_for('login'))
     return render_template('forgot_password.html', email=u.email)
+
 
 @app.route('/admin')
 @app.route('/admin/user')

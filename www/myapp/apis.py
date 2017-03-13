@@ -139,10 +139,10 @@ def api_download():
     personal = request.json['personal']
     if personal:
         path_abs = current_app.config['UPLOAD_FOLDER']
-        per_str = 'personal'
+        pers_str = 'personal'
     else:
         path_abs = current_app.config['DWG_DIR']
-        per_str = 'dwg'
+        pers_str = 'dwg'
     if len(filelist) > 1:
         zfname = os.path.join(current_app.config['TMP_DIR'], request.remote_addr.replace('.', '-') + '.zip')
         zf = zipfile.ZipFile(os.path.join('myapp/static/', zfname), 'w', zipfile.ZIP_DEFLATED, False)
@@ -162,7 +162,7 @@ def api_download():
         dr = DwgRecord(user_r=current_user, dwg=dwg, url=url_for('api_download'))
         db.session.add(dr)
         db.session.commit()
-        return jsonify({'url': url_for('download_file', dir=filelist[0][1], filename=filelist[0][0], personal=per_str)})
+        return jsonify({'url': url_for('download_file', dir=filelist[0][1], filename=filelist[0][0], personal=pers_str)})
 
 
 @app.route('/api/delete', methods=['POST'])
