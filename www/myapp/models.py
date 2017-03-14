@@ -1,5 +1,6 @@
 # coding:utf-8
 
+import os
 from datetime import datetime
 
 from flask import current_app
@@ -31,6 +32,10 @@ class User(db.Model, UserMixin):
             self.email = 'test@test.com'
         if self.email == current_app.config['EMAIL_ADMIN']:
             self.role_r = Role.query.filter_by(permission=0xff).first()
+            dir = str(self.id) + '-' + self.name
+            path = os.path.join(current_app.config['UPLOAD_FOLDER'], dir)
+            if not os.path.isdir(path):
+                os.mkdir(path)
         else:
             self.role_r = Role.query.filter_by(default=True).first()
 
