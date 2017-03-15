@@ -162,13 +162,13 @@ def download_file(dir, filename, personal):
     options['conditional'] = True
     options['as_attachment'] = True
     options['attachment_filename'] = fname_encoded
-    # 使用nginx处理静态文件
-    if current_app.config['USE_X_SENDFILE'] and current_app.config['NGINX']:
-        options['X-Accel-Redirect'] = hidden_path
     rv = send_from_directory(dir_abs, filename, **options)
     # 支持中文名称
     if fname_encoded == filename:
         rv.headers['Content-Disposition'] += "; filename*=utf-8''%s" % fname_encoded
+    # 使用nginx处理静态文件
+    if current_app.config['USE_X_SENDFILE'] and current_app.config['NGINX']:
+        rv.headers['X-Accel-Redirect'] = hidden_path
     return rv
 
 
