@@ -60,7 +60,7 @@
             <h3 class="uk-panel-title"><i class="uk-icon-folder-open"></i> 图纸目录</h3>
             <ul class="uk-list uk-list-line">
                 {% for dir in args.dirlist %}
-                    <li><a href="{{ url_for('index', dir_cu=dir, page_cu=1) }}">
+                    <li><a href="{{ url_for('browse', dir_cu=dir, page_cu=1) }}">
                     {% if dir == args.dir_cu %}
                         <i class="uk-icon-folder-open"></i> {{ dir }}
                     {% else %}

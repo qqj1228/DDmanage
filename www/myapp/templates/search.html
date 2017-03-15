@@ -61,7 +61,7 @@
             <h3 class="uk-panel-title"><i class="uk-icon-folder-open"></i> 图纸目录</h3>
             <ul class="uk-list uk-list-line">
                 {% for dir in args.dirlist %}
-                    <li><a href="{{ url_for('index', dir_cu=dir, page_cu=1) }}">
+                    <li><a href="{{ url_for('browse', dir_cu=dir, page_cu=1) }}">
                     {% if dir == args.dir_cu %}
                         <i class="uk-icon-folder-open"></i> {{ dir }}
                     {% else %}
@@ -103,7 +103,7 @@
                     <tr class="uk-text-center uk-table-middle">
                         <td><input name="subcheck" type="checkbox"></td>
                         <td>
-                            <a target="_aboutblank" href="{{ url_for('show', dir=file[0], filename=file[1]) }}" title="点击后打开预览窗口">{{ file[1] }}</a>
+                            <a target="_aboutblank" href="{{ url_for('show', dir=file[0], filename=file[1], personal='dwg') }}" title="点击后打开预览窗口">{{ file[1] }}</a>
                         </td>
                         <td>{{ file[0] }}</td>
                         <td>

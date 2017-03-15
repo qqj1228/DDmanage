@@ -6,7 +6,7 @@ import re
 import shutil
 from urllib.parse import quote
 
-from flask import flash, redirect, render_template, request, url_for, send_from_directory, current_app
+from flask import flash, redirect, render_template, url_for, send_from_directory, current_app
 from flask_login import login_required, logout_user, current_user
 
 from . import app
@@ -72,9 +72,13 @@ def getpage(filelist, page_cu):
 
 
 @app.route('/')
-@app.route('/<dir_cu>/<int:page_cu>')
+def index():
+    return redirect(url_for('about'))
+
+@app.route('/browse')
+@app.route('/browse/<dir_cu>/<int:page_cu>')
 @login_required
-def index(dir_cu='', page_cu=1):
+def browse(dir_cu='', page_cu=1):
     dirlist = getdir()
     filelist = getfile(os.path.join(DWG_DIR, dir_cu))
     page = getpage(filelist, page_cu)
@@ -84,7 +88,7 @@ def index(dir_cu='', page_cu=1):
     args['dir_cu'] = dir_cu
     args['page_cu'] = page_cu
     args['page'] = page
-    return render_template('index.html', args=args)
+    return render_template('browse.html', args=args)
 
 
 @app.route('/show/<dir>/<filename>/<personal>')
@@ -101,7 +105,7 @@ def show(dir, filename, personal):
         if personal == 'personal':
             rv = redirect(url_for('manage', page_cu=1))
         else:
-            rv = redirect(url_for('index', dir_cu=dir, page_cu=1))
+            rv = redirect(url_for('browse', dir_cu=dir, page_cu=1))
         return rv
 
 

@@ -152,7 +152,7 @@ def api_download():
         path_abs = current_app.config['DWG_DIR']
         pers_str = 'dwg'
     if len(filelist) > 1:
-        zfname = os.path.join(current_app.config['TMP_DIR'], request.remote_addr.replace('.', '-') + '.zip')
+        zfname = os.path.join(current_app.config['TMP_DIR'], str(current_user.id) + '.zip')
         zf = zipfile.ZipFile(os.path.join('myapp/static/', zfname), 'w', zipfile.ZIP_DEFLATED, False)
         for file in filelist:
             zf.write(os.path.join(path_abs, file[1], file[0]), file[0])
