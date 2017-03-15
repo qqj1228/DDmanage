@@ -114,7 +114,7 @@ def showdwg(dir, filename, personal):
         source = os.path.join(current_app.config['UPLOAD_FOLDER'], dir, filename)
     else:
         source = os.path.join(DWG_DIR, dir, filename)
-    dest = os.path.join(TMP_DIR, request.remote_addr.replace('.', '-'))
+    dest = os.path.join(TMP_DIR, str(current_user.id))
     shutil.copy(source, os.path.join('myapp/static/', dest))
     url = url_for('static', filename=dest, _external=True)
     args['filename'] = filename
@@ -130,7 +130,7 @@ def showpdf(dir, filename, personal):
         source = os.path.join(current_app.config['UPLOAD_FOLDER'], dir, filename)
     else:
         source = os.path.join(DWG_DIR, dir, filename)
-    addr_name = request.remote_addr.replace('.', '-')
+    addr_name = str(current_user.id)
     name_ext = os.path.splitext(filename)
     filelist = os.listdir(os.path.join(current_app.root_path, 'static/', TMP_DIR))
     for file in filelist:
