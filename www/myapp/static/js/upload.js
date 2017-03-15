@@ -12,6 +12,9 @@ $(function() {
 
     uploader = WebUploader.create({
 
+        // 限制单个文件大小为200m，单位为字节
+        fileSingleSizeLimit: 1024*1024*200,
+
         // 不压缩image
         resize: false,
 
@@ -25,6 +28,12 @@ $(function() {
         // 内部根据当前运行时创建，可能是input元素，也可能是flash.
         pick: '#picker'
     });
+
+    // 当上传出错时触发
+    uploader.on('error', function(type){
+        UIkit.modal.alert('出现错误! 错误码: ' + type);
+    });
+
     // 当有文件添加进来的时候
     uploader.on( 'fileQueued', function( file ) {
         $list.append( '<div id="' + file.id + '" class="uk-panel uk-panel-box uk-margin-bottom">' +
@@ -59,8 +68,8 @@ $(function() {
         }
     });
 
-    uploader.on( 'uploadError', function( file ) {
-        $( '#'+file.id ).find('span.state').text('网络出错').removeClass("uk-badge-warning").addClass("uk-badge-danger");
+    uploader.on( 'uploadError', function( file, reason ) {
+        $( '#'+file.id ).find('span.state').text('网络出错' + reason).removeClass("uk-badge-warning").addClass("uk-badge-danger");
     });
 
     uploader.on( 'uploadComplete', function( file ) {

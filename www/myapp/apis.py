@@ -7,6 +7,7 @@ from email.header import Header
 from email.mime.text import MIMEText
 from email.utils import formataddr, parseaddr
 import zipfile
+import shutil
 
 from flask import flash, jsonify, request, current_app, url_for
 from flask_login import login_required, login_user, current_user
@@ -138,7 +139,7 @@ def api_archive():
 
 @app.route('/api/download', methods=['POST'])
 @login_required
-@permission_required(Permission.DWG_UPDOWN)
+@permission_required(Permission.FILE_UPDOWN)
 def api_download():
     filelist = request.json['filelist']
     personal = request.json['personal']
@@ -146,6 +147,8 @@ def api_download():
         path_abs = current_app.config['UPLOAD_FOLDER']
         pers_str = 'personal'
     else:
+        if not current_user.can(Permission.DWG_UPDOWN):
+            abort(403)
         path_abs = current_app.config['DWG_DIR']
         pers_str = 'dwg'
     if len(filelist) > 1:
@@ -155,38 +158,43 @@ def api_download():
             zf.write(os.path.join(path_abs, file[1], file[0]), file[0])
         zf.close()
         # 操作记录
-        for file in filelist:
-            dwg = os.path.join(file[1], file[0])
-            dr = DwgRecord(user_r=current_user, dwg=dwg, url=url_for('api_download'))
-            db.session.add(dr)
-            db.session.commit()
+        if not personal:
+            for file in filelist:
+                dwg = os.path.join(file[1], file[0])
+                dr = DwgRecord(user_r=current_user, dwg=dwg, url=url_for('api_download'))
+                db.session.add(dr)
+                db.session.commit()
         return jsonify({'url': url_for('static', filename=zfname)})
     else:
         # 操作记录
-        dwg = os.path.join(filelist[0][1], filelist[0][0])
-        dr = DwgRecord(user_r=current_user, dwg=dwg, url=url_for('api_download'))
-        db.session.add(dr)
-        db.session.commit()
+        if not personal:
+            dwg = os.path.join(filelist[0][1], filelist[0][0])
+            dr = DwgRecord(user_r=current_user, dwg=dwg, url=url_for('api_download'))
+            db.session.add(dr)
+            db.session.commit()
         return jsonify({'url': url_for('download_file', dir=filelist[0][1], filename=filelist[0][0], personal=pers_str)})
 
 
 @app.route('/api/delete', methods=['POST'])
 @login_required
-@permission_required(Permission.DWG_UPDOWN)
+@permission_required(Permission.FILE_UPDOWN)
 def api_delete():
     filelist = request.json['filelist']
     personal = request.json['personal']
     if personal:
         path_abs = current_app.config['UPLOAD_FOLDER']
     else:
+        if not current_user.can(Permission.DWG_UPDOWN):
+            abort(403)
         path_abs = current_app.config['DWG_DIR']
     for file in filelist:
         os.remove(os.path.join(path_abs, file[1], file[0]))
         # 操作记录
-        dwg = os.path.join(file[1], file[0])
-        dr = DwgRecord(user_r=current_user, dwg=dwg, url=url_for('api_delete'))
-        db.session.add(dr)
-        db.session.commit()
+        if not personal:
+            dwg = os.path.join(file[1], file[0])
+            dr = DwgRecord(user_r=current_user, dwg=dwg, url=url_for('api_delete'))
+            db.session.add(dr)
+            db.session.commit()
     return jsonify({'done': True})
 
 
@@ -216,6 +224,10 @@ def api_del_user():
         raise APIResourceNotFoundError('email', '没有此email对应的用户')
     db.session.delete(u)
     db.session.commit()
+    dir = u.email
+    path = os.path.join(current_app.config['UPLOAD_FOLDER'], dir)
+    if os.path.isdir(path):
+        shutil.rmtree(path)
     return jsonify({'name': u.name})
 
 
@@ -235,7 +247,7 @@ def api_edit_user():
     db.session.add(u)
     db.session.commit()
     if (r.permission | Permission.DEFAULT) != Permission.DEFAULT:
-        dir = str(u.id) + '-' + u.name
+        dir = u.email
         path = os.path.join(current_app.config['UPLOAD_FOLDER'], dir)
         if not os.path.isdir(path):
             os.mkdir(path)

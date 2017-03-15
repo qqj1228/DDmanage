@@ -1,6 +1,10 @@
 <div class="uk-panel uk-panel-box uk-text-center">
     <img width="120" height="120" src="{{ url_for('static', filename=config['WEB_LOGO']) }}" alt="">
     <p>本程序可以预览AutoCAD格式图纸、pdf格式图纸和图片格式。</p>
-    <p>AutoCAD图纸预览请使用IE内核浏览器，版本不低于IE9。首次使用请下载安装<a href="./MxDrawX.zip">IE浏览器插件</a>。</p>
-    <p>若无法预览pdf图纸，则需要安装 <a href="./pdf.exe">pdf阅读软件</a>。</p>
+    <p>AutoCAD图纸预览请使用IE内核浏览器，版本不低于IE9。首次使用请下载安装
+        <a href="{{ url_for('static', filename= config['TMP_DIR'] + '/MxDrawX.zip') }}">IE浏览器插件</a>。
+    </p>
+    <p>若无法预览pdf图纸，则需要安装
+        <a href="{{ url_for('static', filename= config['TMP_DIR'] + '/pdf.exe') }}">pdf阅读软件</a>。
+    </p>
 </div>
