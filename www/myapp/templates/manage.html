@@ -84,7 +84,7 @@
                     <tr class="uk-text-center">
                         <td><input name="subcheck" type="checkbox"></td>
                         <td>
-                            <a target="_aboutblank" href="{{ url_for('show', dir=args.dir, filename=file) }}" title="点击后打开预览窗口">{{ file }}</a>
+                            <a target="_aboutblank" href="{{ url_for('show', dir=args.dir, filename=file, personal='personal') }}" title="点击后打开预览窗口">{{ file }}</a>
                         </td>
                         <td>{{ args.dir }}</td>
                         <td>

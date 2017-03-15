@@ -73,6 +73,7 @@ def getpage(filelist, page_cu):
 
 @app.route('/')
 @app.route('/<dir_cu>/<int:page_cu>')
+@login_required
 def index(dir_cu='', page_cu=1):
     dirlist = getdir()
     filelist = getfile(os.path.join(DWG_DIR, dir_cu))
@@ -86,26 +87,33 @@ def index(dir_cu='', page_cu=1):
     return render_template('index.html', args=args)
 
 
-@app.route('/show/<dir>/<filename>')
+@app.route('/show/<dir>/<filename>/<personal>')
 @login_required
 @permission_required(Permission.DWG_BROWSE)
-def show(dir, filename):
-    raw = r'\.(pdf|jpg|jpeg|jpe|png|gif|ico|svg|tif|tiff|bmp|txt|rtf|doc|docx|xls|xlsx|ppt|pptx)$'
+def show(dir, filename, personal):
+    raw = r'\.(pdf|jpg|jpeg|jpe|png|gif|ico|svg|tif|tiff|bmp|txt|doc|docx|xls|xlsx|ppt|pptx)$'
     if re.search(r'\.d[wx][gft]$', filename, re.M | re.I):
-        return redirect(url_for('showdwg', dir=dir, filename=filename))
+        return redirect(url_for('showdwg', dir=dir, filename=filename, personal=personal))
     elif re.search(raw, filename, re.M | re.I):
-        return redirect(url_for('showpdf', dir=dir, filename=filename))
+        return redirect(url_for('showpdf', dir=dir, filename=filename, personal=personal))
     else:
         flash('无法打开 "' + filename + '"，暂未支持该文件格式。')
-        return redirect(url_for('index', dir_cu=dir, page_cu=1))
+        if personal == 'personal':
+            rv = redirect(url_for('manage', page_cu=1))
+        else:
+            rv = redirect(url_for('index', dir_cu=dir, page_cu=1))
+        return rv
 
 
-@app.route('/showdwg/<dir>/<filename>')
+@app.route('/showdwg/<dir>/<filename>/<personal>')
 @login_required
 @permission_required(Permission.DWG_BROWSE)
-def showdwg(dir, filename):
+def showdwg(dir, filename, personal):
     args = dict()
-    source = os.path.join(DWG_DIR, dir, filename)
+    if personal == 'personal':
+        source = os.path.join(current_app.config['UPLOAD_FOLDER'], dir, filename)
+    else:
+        source = os.path.join(DWG_DIR, dir, filename)
     dest = os.path.join(TMP_DIR, request.remote_addr.replace('.', '-'))
     shutil.copy(source, os.path.join('myapp/static/', dest))
     url = url_for('static', filename=dest, _external=True)
@@ -114,11 +122,14 @@ def showdwg(dir, filename):
     return render_template('showdwg.html', args=args)
 
 
-@app.route('/showpdf/<dir>/<filename>')
+@app.route('/showpdf/<dir>/<filename>/<personal>')
 @login_required
 @permission_required(Permission.DWG_BROWSE)
-def showpdf(dir, filename):
-    source = os.path.join(DWG_DIR, dir, filename)
+def showpdf(dir, filename, personal):
+    if personal == 'personal':
+        source = os.path.join(current_app.config['UPLOAD_FOLDER'], dir, filename)
+    else:
+        source = os.path.join(DWG_DIR, dir, filename)
     addr_name = request.remote_addr.replace('.', '-')
     name_ext = os.path.splitext(filename)
     filelist = os.listdir(os.path.join(current_app.root_path, 'static/', TMP_DIR))
