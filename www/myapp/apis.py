@@ -109,7 +109,7 @@ def api_upload():
     if file is None:
         APIResourceNotFoundError('file', '未接收到上传的文件！')
     filename = secure_filename(file.filename)
-    dir = str(current_user.id) + '-' + current_user.name
+    dir = current_user.email
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], dir, filename))
     return jsonify({'done': True})
 
