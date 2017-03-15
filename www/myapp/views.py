@@ -152,14 +152,19 @@ def showpdf(dir, filename, personal):
 def download_file(dir, filename, personal):
     if personal == 'personal':
         dir_abs = os.path.join(current_app.config['UPLOAD_FOLDER'], dir)
+        hidden_path = os.path.join('/personal', dir, filename)
     else:
         dir_abs = os.path.join(current_app.config['DWG_DIR'], dir)
+        hidden_path = os.path.join('/dwg', dir, filename)
     # 对文件名进行转码
     fname_encoded = quote(filename)
     options = dict()
     options['conditional'] = True
     options['as_attachment'] = True
     options['attachment_filename'] = fname_encoded
+    # 使用nginx处理静态文件
+    if current_app.config['USE_X_SENDFILE'] and current_app.config['NGINX']:
+        options['X-Accel-Redirect'] = hidden_path
     rv = send_from_directory(dir_abs, filename, **options)
     # 支持中文名称
     if fname_encoded == filename:
@@ -195,7 +200,7 @@ def logout():
 @login_required
 @permission_required(Permission.DWG_BROWSE)
 def manage(page_cu=1):
-    dir = str(current_user.id) + '-' + current_user.name
+    dir = current_user.email
     filelist = getfile(os.path.join(current_app.config['UPLOAD_FOLDER'], dir))
     page = getpage(filelist, page_cu)
     args = dict()

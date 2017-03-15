@@ -13,6 +13,10 @@ WEB_LOGO = 'img/logo.svg'
 # 每页显示多少个文件
 RANGE = 100
 
+# 静态文件处理方式
+USE_X_SENDFILE = False
+NGINX = False
+
 # 上传文件存放地址
 UPLOAD_FOLDER = '/users/cash/DDmanage/www/upload'
 

@@ -128,6 +128,11 @@ def api_archive():
     if os.path.isfile(os.path.join(path, filename)):
         raise APIValueError('file', '存档内有同名文件!')
     file.save(os.path.join(path, filename))
+    # 操作记录
+    dwg = os.path.join(path, filename)
+    dr = DwgRecord(user_r=current_user, dwg=dwg, url=url_for('api_archive'))
+    db.session.add(dr)
+    db.session.commit()
     return jsonify({'done': True})
 
 

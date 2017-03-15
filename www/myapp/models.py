@@ -32,7 +32,7 @@ class User(db.Model, UserMixin):
             self.email = 'test@test.com'
         if self.email == current_app.config['EMAIL_ADMIN']:
             self.role_r = Role.query.filter_by(permission=0xff).first()
-            dir = str(self.id) + '-' + self.name
+            dir = self.email
             path = os.path.join(current_app.config['UPLOAD_FOLDER'], dir)
             if not os.path.isdir(path):
                 os.mkdir(path)
