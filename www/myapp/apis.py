@@ -267,5 +267,5 @@ def api_search_url():
 @login_required
 @admin_required
 def api_records():
-    records = DwgRecord.query.order_by(DwgRecord.datetime.desc()).all()
+    records = DwgRecord.query.order_by(DwgRecord.datetime.desc()).limit(100).all()
     return jsonify({'records': [record.to_json() for record in records]})
