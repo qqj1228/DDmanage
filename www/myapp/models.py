@@ -1,7 +1,7 @@
 # coding:utf-8
 
 import os
-from datetime import datetime
+from datetime import date
 
 from flask import current_app
 from flask_login import UserMixin
@@ -79,7 +79,7 @@ class User(db.Model, UserMixin):
         return json_user
 
     def __repr__(self):
-        return 'User-%r' % self.name
+        return '<User-name:%r>' % self.name
 
 
 class Permission:
@@ -122,7 +122,7 @@ class Role(db.Model):
         return json_role
 
     def __repr__(self):
-        return 'Role-%r' % self.name
+        return '<Role-name:%r>' % self.name
 
 
 class DwgRecord(db.Model):
@@ -130,20 +130,20 @@ class DwgRecord(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     dwg = db.Column(db.String(128), nullable=False)
     url = db.Column(db.String(128), nullable=False)
-    datetime = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.Date, nullable=False)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.datetime = datetime.now()
+        self.date = date.today()
 
     def to_json(self):
         json_dwgrecord = {
             'user': self.user_r.name,
             'dwg': self.dwg,
             'url': self.url,
-            'datetime': self.datetime
+            'date': self.date.isoformat()
         }
         return json_dwgrecord
 
     def __repr__(self):
-        return 'DwgRecord-%r' % self.dwg
+        return '<DwgRecord-dwg:%r>' % self.dwg

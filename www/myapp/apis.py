@@ -8,9 +8,11 @@ from email.mime.text import MIMEText
 from email.utils import formataddr, parseaddr
 import zipfile
 import shutil
+from datetime import date
 
-from flask import flash, jsonify, request, current_app, url_for
+from flask import flash, jsonify, request, current_app, url_for, abort
 from flask_login import login_required, login_user, current_user
+from sqlalchemy import and_
 
 from . import app, db
 from .APIError import (APIPermissionError, APIResourceNotFoundError,
@@ -263,9 +265,26 @@ def api_search_url():
     return jsonify({'url': url_for('search', text=text)})
 
 
-@app.route('/api/records')
+@app.route('/api/records', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def api_records():
-    records = DwgRecord.query.order_by(DwgRecord.datetime.desc()).limit(100).all()
+    if request.method == 'GET':
+        records = DwgRecord.query.order_by(DwgRecord.date.desc()).limit(100).all()
+    elif request.method == 'POST':
+        user = '%' + request.json['user'] + '%'
+        dwg = '%' + request.json['dwg'] + '%'
+        url = '%' + request.json['url'] + '%'
+        date1 = request.json['date1']
+        if not date1:
+            date1 = date.today()
+        date2 = request.json['date2']
+        if not date2:
+            date2 = date.today()
+        users = User.query.filter(User.name.like(user)).all()
+        u_id = []
+        for user in users:
+            u_id.append(user.id)
+        rule = and_(DwgRecord.dwg.like(dwg), DwgRecord.url.like(url), DwgRecord.user_id.in_(u_id), DwgRecord.date >= date1, DwgRecord.date <= date2)
+        records = DwgRecord.query.filter(rule).order_by(DwgRecord.date.desc()).all()
     return jsonify({'records': [record.to_json() for record in records]})
