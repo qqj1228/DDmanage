@@ -19,9 +19,9 @@ def r_slash(s):
     Returns:
         replaced slash string
     """
-    s = re.sub('[" "\/\--.]+', '-', s)
-    s = re.sub(r':-', ':', s)
-    s = re.sub(r'^-|-$', '', s)
+    s = re.sub(r'[" "\/\\]+', '_', s)
+    s = re.sub(r':_', ':', s)
+    s = re.sub(r'^_|_$', '', s)
     return s
 
 
@@ -95,9 +95,9 @@ class InMemoryZip(object):
 
 
 def todir(filename):
-    if filename.startswith('HT.HRCS') or filename.startswith('HRCS') or filename.startswith('HT.RSCS'):
+    if filename.startswith('HT.HRCS') or filename.startswith('HRCS') or filename.startswith('HT.RSCCS'):
         return 'HRCS'
-    if filename.startswith('HT'):
+    if filename.startswith('HT.'):
         s = re.match(r'^(HT\.[\S])', filename, re.M | re.I)
         return s.group(1).upper()
     else:

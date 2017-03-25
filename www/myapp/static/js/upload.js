@@ -69,7 +69,7 @@ $(function() {
     });
 
     uploader.on( 'uploadError', function( file, reason ) {
-        $( '#'+file.id ).find('span.state').text('网络出错' + reason).removeClass("uk-badge-warning").addClass("uk-badge-danger");
+        $( '#'+file.id ).find('span.state').text('网络出错:' + reason).removeClass("uk-badge-warning").addClass("uk-badge-danger");
     });
 
     uploader.on( 'uploadComplete', function( file ) {

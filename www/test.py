@@ -43,9 +43,9 @@ class TestCase(unittest.TestCase):
     def test_secure_filename(self):
         self.assertEqual('abc.txt', tools.secure_filename('abc.txt'))
         self.assertEqual('中文.txt', tools.secure_filename('中文.txt'))
-        self.assertEqual('abc.txt', tools.secure_filename('../abc.txt'))
-        self.assertEqual('abc-dfg.txt', tools.secure_filename('/abc/dfg.txt'))
-        self.assertEqual('abc-abc.txt', tools.secure_filename('abc../abc.txt'))
+        self.assertEqual('-_abc.txt', tools.secure_filename('-\/abc.txt'))
+        self.assertEqual('abc_dfg.txt', tools.secure_filename('/abc/dfg.txt'))
+        self.assertEqual('abc.._abc.txt', tools.secure_filename('abc../abc.txt'))
 
     def test_roles_and_permissions(self):
         with app.app_context():
@@ -57,11 +57,12 @@ class TestCase(unittest.TestCase):
     def test_todir(self):
         self.assertEqual('HRCS', apis.todir('HT.HRCS95.41-00'))
         self.assertEqual('HRCS', apis.todir('HRCS95.41-00'))
-        self.assertEqual('HRCS', apis.todir('HT.RSCS2.41-00'))
+        self.assertEqual('HRCS', apis.todir('HT.RSCCS2.41-00'))
         self.assertEqual('HT.0', apis.todir('HT.0M20.41-00'))
         self.assertEqual('HT.A', apis.todir('HT.aM20.41-00'))
         self.assertEqual('HT.A', apis.todir('HT.AM20.41-00'))
         self.assertEqual('H', apis.todir('HM20.41-00'))
+        self.assertEqual('H', apis.todir('HT6M50.41-00'))
         self.assertEqual('4', apis.todir('4M20.41-00'))
         self.assertEqual('S', apis.todir('s6M20.41-00'))
         self.assertEqual('我', apis.todir('我的文件'))
