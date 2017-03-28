@@ -46,6 +46,7 @@ def getdir(dir=DWG_DIR):
     for dir in dirlist:
         if os.path.isdir(os.path.join(DWG_DIR, dir)):
             dirlist_out.append(dir)
+    dirlist_out.sort()
     return dirlist_out
 
 
@@ -56,6 +57,7 @@ def getfile(dir=DWG_DIR):
         if os.path.isfile(os.path.join(dir, file)):
             if file[0] != '.':    # 去掉以“.”开头的隐藏文件
                 filelist_out.append(file)
+    filelist_out.sort()
     return filelist_out
 
 
@@ -74,6 +76,7 @@ def getpage(filelist, page_cu):
 @app.route('/')
 def index():
     return redirect(url_for('about'))
+
 
 @app.route('/browse')
 @app.route('/browse/<dir_cu>/<int:page_cu>')
