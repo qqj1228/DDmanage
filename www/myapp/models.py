@@ -23,7 +23,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(64), nullable=False, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
-    dwgrecords = db.relationship('DwgRecord', backref='user_r', lazy='dynamic')
+    dwgrecords = db.relationship('DwgRecord', backref='user_r', lazy='dynamic', cascade='all')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
