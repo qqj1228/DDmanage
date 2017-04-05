@@ -127,7 +127,7 @@
             {% if args.page_cu == i %}
                 <li class="uk-active"><span>{{ i }}</span></li>
             {% else %}
-                <li><a href="{{ url_for('index', dir_cu=args.dir_cu, page_cu=i) }}">{{ i }}</a></li>
+                <li><a href="{{ url_for('browse', dir_cu=args.dir_cu, page_cu=i) }}">{{ i }}</a></li>
             {% endif %}
         {% endfor %}
         </ul>
