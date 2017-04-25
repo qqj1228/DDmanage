@@ -250,11 +250,13 @@ def admin_record():
 
 def findfile(start, name):
     filelist = []
+    s = name.replace('(', '\(')
+    s = s.replace(')', '\)')
     for relpath, dirs, files in os.walk(start):
         for file in files:
             if file[0] != '.':    # 去掉以“.”开头的隐藏文件
                 name_ext = os.path.splitext(file)
-                if re.search(name, name_ext[0], re.M | re.I) is not None:
+                if re.search(s, name_ext[0], re.M | re.I) is not None:
                     path = relpath.lstrip(start)
                     filelist.append((path, file))
     return filelist
