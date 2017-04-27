@@ -259,17 +259,23 @@ def findfile(start, name):
                 if re.search(s, name_ext[0], re.M | re.I) is not None:
                     path = relpath.lstrip(start)
                     filelist.append((path, file))
+    filelist.sort(key=lambda x: x[1])
     return filelist
 
 
 @app.route('/search/<text>')
+@app.route('/search/<text>/<int:page_cu>')
 @login_required
 @permission_required(Permission.DWG_BROWSE)
-def search(text):
+def search(text, page_cu=1):
     dirlist = getdir()
+    text = secure_filename(text.strip())
+    filelist = findfile(current_app.config['DWG_DIR'], text)
+    page = getpage(filelist, page_cu)
     args = dict()
     args['dirlist'] = dirlist
     args['dir_cu'] = ''
-    text = secure_filename(text.strip())
-    filelist = findfile(current_app.config['DWG_DIR'], text)
+    args['text'] = text
+    args['page_cu'] = page_cu
+    args['page'] = page
     return render_template('search.html', text=text, filelist=filelist, args=args)

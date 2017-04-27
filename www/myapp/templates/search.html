@@ -40,7 +40,8 @@
         $('form').submit(function(e){
             e.preventDefault();
             var text = $(this).find('#search').val();
-            if(text.trim()){
+            var search = text.trim();
+            if(search.length > 3){
                 postJSON("{{ url_for('api_search_url') }}", {text: text.trim()}, function(err, r){
                     if (err) {
                         error(err);
@@ -48,6 +49,8 @@
                     }
                     location.assign(r.url);
                 });
+            } else {
+                UIkit.modal.alert("搜索关键词长度必须不小于4个字符!");
             }
         });
     });
@@ -81,7 +84,7 @@
             <form class="uk-form">
                 <div class="uk-form-icon uk-width-1-1">
                     <i class="uk-icon-search"></i>
-                    <input id="search" type="search" class="uk-width-1-1" placeholder="存档图纸全局搜索">
+                    <input id="search" type="search" class="uk-width-1-1" placeholder="搜索关键词长度不小于4个字符">
                 </div>
             </form>
             <table class="uk-table uk-table-hover uk-table-striped uk-table-condensed">
@@ -99,7 +102,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for file in filelist %}
+                    {% for file in filelist[args.page.page_start:args.page.page_start+args.page.range] %}
                     <tr class="uk-text-center uk-table-middle">
                         <td><input name="subcheck" type="checkbox"></td>
                         <td>
@@ -117,5 +120,14 @@
                 </tbody>
             </table>
         </div>
+        <ul class="uk-pagination" data-uk-margin>
+        {% for i in range(1, args.page.page_all+1) %}
+            {% if args.page_cu == i %}
+                <li class="uk-active"><span>{{ i }}</span></li>
+            {% else %}
+                <li><a href="{{ url_for('search', text=text, page_cu=i) }}">{{ i }}</a></li>
+            {% endif %}
+        {% endfor %}
+        </ul>
     </div>
 {% endblock %}
