@@ -34,7 +34,7 @@
                         }
                         var p = parseQueryString();
                         if (p.next) {
-                            return location.assign(r.next);
+                            return location.assign(p.next);
                         } else {
                             return location.assign("{{ url_for('browse') }}");
                         }
