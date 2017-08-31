@@ -1,4 +1,5 @@
 #!/bin/bash
 
 . venv/bin/activate
-python3 www/run.py
+cd www
+python3 run.py
