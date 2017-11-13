@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ args.filename }}</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
-    <link rel="stylesheet" href="//cdn.bootcss.com/uikit/2.25.0/css/uikit.gradient.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/uikit.gradient.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-    <script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
-    <script src="//cdn.bootcss.com/uikit/2.25.0/js/uikit.min.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/uikit.min.js') }}"></script>
 </head>
 <body>
     <p class="uk-height-viewport" align="center">

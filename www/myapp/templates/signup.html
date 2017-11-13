@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}用户注册{% endblock %}
 {% block script %}
-<script src="//cdn.bootcss.com/crypto-js/3.1.2/rollups/sha1.js"></script>
+<script src="{{ url_for('static', filename='js/sha1.js') }}"></script>
 <script type="text/javascript">
     function validateEmail(email) {
         var re = /^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$/;

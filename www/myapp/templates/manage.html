@@ -2,8 +2,8 @@
 {% block title %} 文件管理 {% endblock %}
 {% block script %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/webuploader.css') }}">
-<script src="//cdn.staticfile.org/webuploader/0.1.5/webuploader.min.js"></script>
-<link rel="stylesheet" href="//cdn.bootcss.com/uikit/2.25.0/css/components/progress.gradient.min.css">
+<script src="{{ url_for('static', filename='js/webuploader.min.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/progress.gradient.min.css') }}">
 <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
 <script src="{{ url_for('static', filename='js/table.js') }}"></script>
 <script>

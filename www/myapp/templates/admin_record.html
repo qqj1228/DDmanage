@@ -2,10 +2,10 @@
 {% block title %} 后台管理 {% endblock %}
 {% block script %}
 <script src="{{ url_for('static', filename='js/admin_record.js') }}"></script>
-<link rel="stylesheet" href="//cdn.bootcss.com/uikit/2.25.0/css/components/datepicker.gradient.min.css">
-<script src="//cdn.bootcss.com/uikit/2.25.0/js/components/datepicker.min.js"></script>
-<link rel="stylesheet" href="//cdn.bootcss.com/uikit/2.25.0/css/components/tooltip.gradient.min.css">
-<script src="//cdn.bootcss.com/uikit/2.25.0/js/components/tooltip.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/datepicker.gradient.min.css') }}">
+<script src="{{ url_for('static', filename='js/datepicker.min.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tooltip.gradient.min.css') }}">
+<script src="{{ url_for('static', filename='js/tooltip.min.js') }}"></script>
 {% endblock %}
 {% block content %}
     <!-- sidebar -->
