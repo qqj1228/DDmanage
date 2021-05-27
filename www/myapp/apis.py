@@ -74,6 +74,23 @@ def api_modify_password():
         flash('密码修改成功请重新登录')
         return jsonify({'name': u.name})
 
+@app.route('/api/forgot_password', methods=['POST'])
+def api_forgot_password():
+    email = request.json['email']
+    password1 = request.json['password1']
+    password2 = request.json['password2']
+    u = User.query.filter_by(email=email).first()
+    if u is None:
+        raise APIPermissionError('密码修改失败！用户不存在。')
+    elif password1 != password2:
+        raise APIPermissionError('密码修改失败！两次输入的密码不一致。')
+    else:
+        u.password = password1
+        db.session.add(u)
+        db.session.commit()
+        flash('密码修改成功请重新登录')
+        return jsonify({'name': u.name})
+
 
 def _format_addr(s):
     name, addr = parseaddr(s)
