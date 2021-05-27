@@ -74,8 +74,8 @@ def api_modify_password():
         flash('密码修改成功请重新登录')
         return jsonify({'name': u.name})
 
-@app.route('/api/forgot_password', methods=['POST'])
-def api_forgot_password():
+@app.route('/api/modify_password_without_password0', methods=['POST'])
+def api_modify_password_without_password0():
     email = request.json['email']
     password1 = request.json['password1']
     password2 = request.json['password2']
